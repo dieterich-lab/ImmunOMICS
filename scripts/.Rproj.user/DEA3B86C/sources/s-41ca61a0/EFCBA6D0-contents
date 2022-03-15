@@ -1,0 +1,11 @@
+library(Seurat)
+library(SeuratDisk)
+
+cohort2 <- readRDS("/prj/NUM_CODEX_PLUS/Covid19_data/cohort2.annote.rds")
+SaveH5Seurat(cohort2, filename = "cohort2.h5Seurat")
+Convert("cohort2.h5Seurat", dest = "h5ad")
+
+
+ch1 = cohort1@assays$RNA@counts
+SaveH5Seurat(cohort2, filename = "cohort2.h5Seurat")
+Convert("cohort2.h5Seurat", dest = "h5ad")

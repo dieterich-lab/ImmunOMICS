@@ -1,0 +1,63 @@
+---
+title: "Data prediction"
+author: "Amina Lemsara"
+subtitle: Cohort 1
+output:
+  html_document:
+  df_print: paged
+  pdf_document: default
+toc: true
+toc_depth: 2
+number_sections: true
+code_folding: hide
+---
+
+```{r setup, include=FALSE, echo=FALSE, message=FALSE}
+knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, cache.lazy = FALSE)
+knitr::opts_chunk$set(fig.width=15, fig.height=7)
+knitr::opts_chunk$set(dev="CairoPNG")
+knitr::opts_knit$set(root.dir = "/prj/NUM_CODEX_PLUS/Amina/scripts")
+set.seed(123)
+```
+
+# Load packages
+```{r libraries}
+library(DropletUtils)
+library(Seurat)
+library(future)
+library(tidyverse)
+library(patchwork)
+library(ggplot2)
+library(SingleR)
+library(celldex)
+library(RColorBrewer)
+```
+
+# Load data
+
+```{r seurat data, message=FALSE}
+cohort1 <- readRDS("/prj/NUM_CODEX_PLUS/Covid19_data/cohort1.annote.rds")
+cohort1_  <- cohort1
+```
+
+
+## Split data 
+split data ito traning and test set 80%
+```{r seurat data}
+ggplot(cohort1_@meta.data, aes(x = Condition ))+
+geom_bar()+
+geom_text(stat='count', aes(label=..count..), position = position_stack(vjust = 0.5))+
+theme_classic()+
+ylab("# of cells")+
+RotatedAxis()
+```
+```{r seurat data}
+set.seed(123)  
+data = Embeddings(cohort1,  reduction = "harmony")
+dim(data)
+split1<- sample(c(rep(0, 0.7 * nrow(data)), rep(1, 0.3 * nrow(data))))
+train <- data[split1 == 0, ]    
+test <- data[split1 == 1, ]    
+```
+
+Continue with python better

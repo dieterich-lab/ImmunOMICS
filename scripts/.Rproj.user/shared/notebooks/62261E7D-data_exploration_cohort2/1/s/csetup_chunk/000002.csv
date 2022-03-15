@@ -1,0 +1,5 @@
+"0","knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, cache.lazy = FALSE)"
+"0","knitr::opts_chunk$set(fig.width=15, fig.height=7)"
+"0","knitr::opts_chunk$set(dev=""CairoPNG"")"
+"0","knitr::opts_knit$set(root.dir = ""~/NUM_CODEX_PLUS"")"
+"0","set.seed(123)"

@@ -1,0 +1,416 @@
+---
+title: "Data exploration"
+subtitle: 'Cohort 2'
+author: "Amina Lemsara"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: 2
+    number_sections: true
+    code_folding: hide
+---
+
+
+```{r setup, echo=FALSE, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, cache.lazy = FALSE)
+knitr::opts_chunk$set(fig.width=15, fig.height=7)
+knitr::opts_chunk$set(dev="CairoPNG")
+knitr::opts_knit$set(root.dir = "~/NUM_CODEX_PLUS")
+set.seed(123)
+```
+
+# Load packages
+```{r libraries}
+library(DropletUtils)
+library(Seurat)
+library(future)
+library(tidyverse)
+library(patchwork)
+library(ggplot2)
+library(SingleR)
+library(celldex)
+library(RColorBrewer)
+```
+
+# Load data
+```{r seurat data, message=FALSE}
+cohort2 <- readRDS("/prj/NUM_CODEX_PLUS/Covid19_data/cohort2.annote.rds")
+cohort2_  <- cohort2
+```
+
+## Check samples
+Dimensionality:
+```{r}
+dim(cohort2_@assays$RNA)
+```
+Counts per feature from metadata:
+```{r}
+ggplot(cohort2@meta.data, aes(x = group_per_sample , fill= purification))+
+  geom_bar()+
+  geom_text(stat='count', aes(label=..count..), position = position_stack(vjust = 0.5))+
+  theme_classic()+
+  theme(
+    panel.grid=element_blank(),
+    legend.text=element_text(size=10),
+    text = element_text(size=12),
+    legend.title = element_blank(),
+    axis.title.x = element_blank()
+  )+  
+  ylab("# of cells")+
+  RotatedAxis() 
+
+ggplot(cohort2@meta.data, aes(x =  group_per_sample , fill= donor))+
+  geom_bar()+
+  geom_text(stat='count', aes(label=..count..), position = position_stack(vjust = 0.5))+
+  theme_classic()+
+  theme(
+    panel.grid=element_blank(),
+    legend.text=element_text(size=10),
+    text = element_text(size=12),
+    legend.title = element_blank(),
+    axis.title.x = element_blank()
+  )+  
+  ylab("# of cells")+
+  RotatedAxis() 
+```
+
+## Filtering information
+nCount_RNA, nFeature_RNA, percent.mt
+```{r}
+FeatureScatter(cohort2_, feature1 = "nCount_RNA", feature2 = "nFeature_RNA" ) +geom_smooth(method = 'lm')
+FeatureScatter(cohort2_, feature1 = "nFeature_RNA", feature2 = "percent.mito" ) +geom_smooth(method = 'lm')
+
+```
+```{r}
+
+VlnPlot(cohort2_, features = c("nFeature_RNA"), ncol = 1)  
+VlnPlot(cohort2_, features = c("nCount_RNA"), ncol = 1)  
+VlnPlot(cohort2_, features = c("percent.mito"), ncol = 1)
+```
+
+
+```{r}
+ggplot(cohort2_@meta.data, aes(x=percent.mito))+geom_density()
+
+```
+
+They already filtered data according to the "Data quality control" section
+```{r}
+
+#cohort2__ <- subset(cohort2_, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 &  percent.mt < 10)
+```
+
+# Preprocess data
+## Normalize data
+
+```{r}
+
+cohort2_ <- NormalizeData(object = cohort2_, normalization.method = "LogNormalize", scale.factor = 10000)
+
+```
+## Identify highly variable features
+```{r}
+
+cohort2_ <- FindVariableFeatures(object = cohort2_, assay = "RNA", selection.method = "vst")
+```
+### Identify the 25 most highly variable genes
+```{r}
+
+top25 <- head(VariableFeatures(cohort2_), 25)
+```
+## Plot variable features
+```{r}
+
+plot1 <- VariableFeaturePlot(cohort2_)
+LabelPoints(plot = plot1, points = top25, repel = TRUE)
+```
+
+## Scaling
+```{r}
+
+cohort2_ <- ScaleData(object = cohort2_, vars.to.regress = c("nCount_RNA"))
+
+```
+# Dimensionality Reduction
+## Perform Linear dimensionality reduction
+```{r}
+
+cohort2_ <- RunPCA(object = cohort2_, features = VariableFeatures(object = cohort2_),  verbose = FALSE)
+```
+## Visualize PCA results
+```{r}
+DimHeatmap(cohort2_, dims = 1, cells = 500, balanced = TRUE)
+
+```
+
+## Determine dimensionality of the data
+```{r}
+
+ElbowPlot(cohort2_,ndims = 30)
+
+```
+
+## UMAP
+```{r}
+
+cohort2_ <- RunUMAP(cohort2_, reduction.use = "pca",  dims = 1:20, seed.use = 42)
+```
+## Check batch effect
+```{r}
+DimPlot(object = cohort2_, 
+        reduction = 'umap', 
+        label = FALSE, 
+        group.by = "donor"
+        )
+```
+
+=> No need for batch correction
+
+Visualize UMAP per conditions and other features from meta data
+```{r}
+p1 <- DimPlot(object = cohort2, 
+        reduction = 'umap', 
+        label = FALSE, 
+        group.by = "experiment", 
+        split.by = "group_per_sample")
+
+p2 <- DimPlot(object = cohort2, 
+        reduction = 'umap', 
+        label = FALSE, 
+        group.by = "disease_stage", 
+        split.by = "group_per_sample")
+
+
+p3 <- DimPlot(object = cohort2, 
+        reduction = 'umap', 
+        label = FALSE, 
+        group.by = "purification", 
+        split.by = "group_per_sample"
+        )
+
+
+CombinePlots(plots = list(p1,p2,p3), ncol=1)
+```
+
+# Clustering
+```{r}
+
+cohort2_ <- FindNeighbors(object = cohort2_, dims = 1:20,   reduction = "pca", force.recalc = TRUE)
+```
+
+```{r}
+
+cohort2_ <-FindClusters(object = cohort2_, resolution = 0.4,    algorithm = 1)
+DimPlot(cohort2_, group.by = "RNA_snn_res.0.4", label = TRUE, reduction = "umap") +ggtitle("Obtained clusters")
+DimPlot(cohort2, group.by = "RNA_snn_res.0.4", label = TRUE, reduction = "umap")+ggtitle("Published clusters")
+
+```
+
+# SingleR
+Get reference expression datasets
+```{r}
+
+hpca.se <- HumanPrimaryCellAtlasData()
+blueprint.se <- BlueprintEncodeData()
+monaco.se <- MonacoImmuneData()
+immune.se <- ImmGenData()
+dmap.se <- DatabaseImmuneCellExpressionData()
+hemato.se <- NovershternHematopoieticData()
+
+```
+
+run singleR to annotate cells
+```{r}
+
+input <- GetAssayData(object = cohort2_, slot = "data", assay = "RNA")
+
+singleR.list <- list()
+
+# perform singleR classification
+singleR.list$hpca <- SingleR(test = input, 
+                             method="single",
+                             fine.tune=FALSE,
+                             ref = hpca.se, 
+                             labels = hpca.se$label.main)
+
+singleR.list$blueprint <- SingleR(test = input, 
+                                  method="single",
+                                  fine.tune=FALSE,
+                                  ref = blueprint.se, 
+                                  labels = blueprint.se$label.main)
+
+singleR.list$monaco <- SingleR(test = input, 
+                               method="single",
+                               fine.tune=FALSE,
+                               ref = monaco.se, 
+                               labels = monaco.se$label.main)
+
+singleR.list$immune <- SingleR(test = input, 
+                               method="single",
+                               fine.tune=FALSE,
+                               ref = immune.se, 
+                               labels = immune.se$label.main)
+
+singleR.list$dmap <- SingleR(test = input, 
+                             method="single",
+                             fine.tune=FALSE,
+                             ref = dmap.se, 
+                             labels = dmap.se$label.main)
+
+singleR.list$hemato <- SingleR(test = input, 
+                               method="single",
+                               fine.tune=FALSE,
+                               ref = hemato.se, 
+                               labels = hemato.se$label.main)
+
+rm(input)
+
+cohort2_$hpca.labels <- singleR.list$hpca$labels
+cohort2_$blueprint.labels <- singleR.list$blueprint$labels
+cohort2_$monaco.labels <- singleR.list$monaco$labels
+cohort2_$immune.labels <- singleR.list$immune$labels
+cohort2_$dmap.labels <- singleR.list$dmap$labels
+cohort2_$hemato.labels <- singleR.list$hemato$labels
+
+```
+
+```{r}
+
+
+
+singleR_colors <- c("T cells" = "#776fb2",
+                    "T_cells" = "#776fb2",
+                    "CD4+ T-cells (naive)" = "#cecce2",
+                    "CD4+ T-cells" = "#cecce2",
+                    "CD4+ T cells" = "#cecce2",
+                    "T cells, CD4+" = "#cecce2",
+                    "CD4+/CD45RA+/CD25- Naive T" = "#cecce2",
+                    "CD4+ T Helper2" = "#cecce2",
+                    "CD4+ Tcm" = "#cecce2",
+                    "CD4+/CD45RO+ Memory" = "#cecce2",
+                    "CD4+ memory T-cells" = "#cecce2",
+                    "CD4+ Tem" = "#cecce2",
+                    
+                    "CD8+ T-cells (naive)" = "#422483",
+                    "CD8+/CD45RA+ Naive Cytotoxic" = "#422483",
+                    "CD8+ T-cells" = "#422483",
+                    "CD8+ T cells" = "#422483",
+                    "T cells, CD8+" = "#422483",
+                    "CD8+ Tcm" = "#422483",
+                    "CD8+ Cytotoxic T" = "#422483",
+                    "CD8+ Tem" = "#422483",
+                    
+                    "Treg cells" = "#004c9d",
+                    "CD4+/CD25 T Reg" = "#004c9d",
+                    "regulatory T-cells" = "#004c9d",
+                    
+                    "NKT cells" = "#684495",
+                    "NK T cells" = "#684495",
+                    "NK cells" = "#338eb0",
+                    "NK_cell" = "#338eb0",
+                    "CD56+ NK" = "#338eb0",
+                    
+                    "ILCs" = "#d9dada",
+                    
+                    "naive B-cells" = "#00963f",
+                    "B-cells" = "#00963f",
+                    "B_cell" = "#00963f",
+                    "B cells" = "#00963f",
+                    "CD19+ B" = "#00963f",
+                    "Pre-B_cell_CD34-" = "#00961a" ,
+                    "Pro-B_cell_CD34+" = "#00961a",
+                    "memory B-cells" = "#32ab6d",
+                    "class-switched memory B-cells" = "#7dc29e",
+                    "Plasma cells" = "#d5e7dd",
+                    
+                    "BM" = "#b3a930",
+                    "BM & Prog." = "#b3a930",
+                    "Progenitors" = "#b3a930", 
+                    "HSC" = "#b3a930",
+                    "HSCs" = "#b3a930",
+                    "HSC_-G-CSF" = "#b3a930",
+                    "HSC_CD34+" = "#b3a930",
+                    "CD34+ Precursors" = "#b3a930",
+                    "MPP" = "#dfd200",
+                    "CLP" = "#ffed00",
+                    "CMP" = "#fdef6d",
+                    "CMPs" = "#fdef6d",
+                    "GMP" = "#faf3a8",
+                    "GMPs" = "#faf3a8",
+                    "MEP" = "#e7bd00",
+                    "MEPs" = "#e7bd00",
+                    "Megakaryocytes" = "#efd873",
+                    
+                    "DC" = "#ef7c00",
+                    "Dendritic" = "#ef7c00",
+                    "Dendritic cells" = "#ef7c00",
+                    
+                    "Monocyte (CD16-)" = "#e6330f",
+                    "Monocyte (CD16+)" = "#ea5552",
+                    "Monocyte (CD14+)" = "#f4a5a5",
+                    "Monocytes" = "#f4a5a5",
+                    "Monocyte" = "#f4a5a5",
+                    "CD14+ Monocyte" = "#f4a5a5",
+                    
+                    "Pro-Myelocyte" = "#001816",
+                    "Myelocyte" = "#00312C",
+                    "Granulocytes" = "#006358",
+                    "Eosinophils" = "#00af9d",
+                    "Neutrophils" = "#87cbbe",
+                    "Basophils" = "#cae6e4",
+                    "Macrophages" = "#b41909",
+                    "Macrophage" = "#b41909",
+                    "Erythrocytes" = "#bb79b2",
+                    "Erythroblast" = "#bb79b2",
+                    "Erythroid cells" = "#bb79b2",
+                    "Platelets" = "#2a3937",
+                    
+                    "Adipocytes" = "#e2a9cd",
+                    "Fibroblasts" = "#be348b",
+                    "Endothelial cells" = "#7d2685",
+                    "Endothelial_cells" = "#7d2685",
+                    "mv Endothelial cells" = "#632282",
+                    "Myocytes"="#A70000",
+                    "Smooth_muscle_cells"="#A70000",
+                    "Chondrocytes"="#F0F7DA",
+                    "Epithelial_cells"="#A67C00",
+                    "Neurons"="#63CDE3"
+)
+```
+```{r}
+
+options(repr.plot.width=20, repr.plot.height=10)
+
+p1 <- DimPlot(object = cohort2_, reduction = 'umap', label = FALSE, group.by ="hemato.labels") + 
+  ggtitle("Hematopoietic labels")+scale_color_manual(values=singleR_colors)+ theme(legend.text = element_text(size=10))
+p2 <- DimPlot(object = cohort2_, reduction = 'umap', label = FALSE, group.by ="hpca.labels") + 
+  ggtitle("HPCA")+scale_color_manual(values=singleR_colors)+ theme(legend.text = element_text(size=10))
+p3 <- DimPlot(object = cohort2_, reduction = 'umap', label = FALSE, group.by ="blueprint.labels") +
+  ggtitle("Blueprint-Encode")+scale_color_manual(values=singleR_colors)+ theme(legend.text = element_text(size=10))
+p4 <- DimPlot(object = cohort2_, reduction = 'umap', label = FALSE, group.by ="monaco.labels") + 
+  ggtitle("Monaco")+scale_color_manual(values=singleR_colors)+ theme(legend.text = element_text(size=10))
+p5 <- DimPlot(object = cohort2_, reduction = 'umap', label = FALSE, group.by ="immune.labels") + 
+  ggtitle("Immune")+scale_color_manual(values=singleR_colors)+ theme(legend.text = element_text(size=10))
+p6 <- DimPlot(object = cohort2_, reduction = 'umap', label = FALSE, group.by ="dmap.labels") + 
+  ggtitle("DMAP")+scale_color_manual(values=singleR_colors)+ theme(legend.text = element_text(size=10))
+
+p1
+p2
+p3
+p4
+p5
+p6
+
+```
+
+# Published clustering 
+```{r}
+
+
+options(repr.plot.width=10, repr.plot.height=10)
+
+DimPlot(object = cohort2,
+            reduction = 'umap',
+            label = F)
+```
