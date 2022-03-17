@@ -65,6 +65,7 @@ def train_classifier(Xtrain, Xvalid, Xtest, classifier, regularize=None,
 #             if len(Xtrain)>0:
 #                 train_index, test_index=elem
 #                 Xtrain, Xvalid = list(np.array(X_train)[train_index]), list(np.array(X_train)[test_index])
+        print(iteration)
         for dataset in ["train", "valid"] + (["test"] if (iteration == (iterations - 1)) else []):
                 if dataset == "train":
 #                     logger.debug("    Training:")
@@ -201,14 +202,14 @@ def train_classifier(Xtrain, Xvalid, Xtest, classifier, regularize=None,
                     if res["loss"] <= best_res["loss"]:
                         best_res = res
                         best_model = copy.deepcopy(classifier.state_dict())
-                        if iterations - 1 ==0:
-                            with open(path+'y_score3_', 'wb') as fp:
-                                pickle.dump(y_score, fp)
-                            pred= torch.stack(pred_)
-                            with open(path+'pred3_', 'wb') as fp:
-                                pickle.dump(pred.tolist(), fp)  
-                            with open(path+'y_true3_', 'wb') as fp:
-                                pickle.dump(y_true, fp)                              
+#                         if iterations - 1 ==0:
+#                             with open(path+'y_score3_', 'wb') as fp:
+#                                 pickle.dump(y_score, fp)
+#                             pred= torch.stack(pred_)
+#                             with open(path+'pred3_', 'wb') as fp:
+#                                 pickle.dump(pred.tolist(), fp)  
+#                             with open(path+'y_true3_', 'wb') as fp:
+#                                 pickle.dump(y_true, fp)                              
     print("**********************************************")
     print(best_res)                        
     classifier.load_state_dict(best_model)
@@ -217,29 +218,6 @@ def train_classifier(Xtrain, Xvalid, Xtest, classifier, regularize=None,
     # torch.save(classifier.state_dict(), "model.pt")
     return classifier, best_res
 
-class Linear(torch.nn.Module):
-    def __init__(self, dim, states):
-         super(Linear, self).__init__()
-         self.states = states
-         if states == 1:
-             self.layer = torch.nn.Linear(dim, states)
-         else:
-             self.layer = torch.nn.Linear(dim, states - 1)
-         self.layer.weight.data.zero_()
-         if self.layer.bias is not None:
-             self.layer.bias.data.zero_()
-
-    def forward(self, x):
-        if self.states == 1:
-            return torch.sum(self.layer(x), dim=-2, keepdim=True)
-        else:
-            return torch.cat([torch.zeros(1, 1), torch.sum(self.layer(x), dim=-2, keepdim=True)], dim=1)
-class Aggregator(torch.nn.Module):
-    def __init__(self):
-        super(Aggregator, self).__init__()
-
-    def forward(self, x):
-        return torch.mean(x, dim=0).unsqueeze_(0)
 
 def logsumexp(x, dim=None):
     if dim is None:
