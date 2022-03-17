@@ -1,0 +1,3 @@
+"0",""
+"0","plot1 <- VariableFeaturePlot(cohort2_)"
+"0","LabelPoints(plot = plot1, points = top25, repel = TRUE)"
