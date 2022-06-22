@@ -88,15 +88,14 @@ Once the pipeline has run successfully you should expect the following files in 
     *   `val_set.pkl` - list of the training sets from the 30 samplings
     *   `val_set.pkl` - list of the training sets from the 30 samplings
     *   `fig_metrics.pdf` - figures representing the diffrent evaluation meterics (AUROC, AUPRC, Accuracy, ...) between the three models "CC, GE and CC&GE"
-    *   `fig_shap.pdf` - figures representing barplots and violin plots of SHAP values from the joint model "CC&GE"
-    *   `fig_shap.pdf` - figures representing barplots and violin plots of SHAP values from the joint model "CC&GE"
-    *   `fig_shap.pdf` - figures representing barplots and violin plots of SHAP values from the joint model "CC&GE"
-    *   `pred_GE.csv` - prediction output scores per column of the GE model (you will get as many columns as the number of samplings)
-    *   `pred_CC.csv` - prediction output scores per column of the CC model (you will get as many columns as the number of samplings)
-    *   `pred_CC_GE.csv` - prediction output scores per column of the joint model (you will get as many columns as the number of samplings)
-    *   `pred_GE.txt` - evaluation meterics represented by the mean and the confidence interval of 95% for the GE model
-    *   `pred_CC.txt` - evaluation meterics represented by the mean and the confidence interval of 95% for the CC model
-    *   `pred_CC_GE.txt` - evaluation meterics represented by the mean and the confidence interval of 95% for the joint model 
+    *   `fig_shap.pdf` - figures representing barplots and violin plots of SHAP values from the joint model "CC&GE" on the validation set
+    *   `pred_GE.csv` - prediction output scores per column of the validation set using the GE model (you will get as many columns as the number of samplings)
+    *   `pred_CC.csv` - prediction output scores per column of the validation set using the CC model (you will get as many columns as the number of samplings)
+    *   `pred_CC_GE.csv` - prediction output scores per columnof the validation set using the joint model (you will get as many columns as the number of samplings)
+    *   `pred_GE.txt` - evaluation meterics represented by the mean and the confidence interval of 95% of the validation set using the GE model
+    *   `pred_CC.txt` - evaluation meterics represented by the mean and the confidence interval of 95% of the validation set using the CC model
+    *   `pred_CC_GE.txt` - evaluation meterics represented by the mean and the confidence interval of 95% of the validation set using the joint model
+*   **`{test_data_filename}/`:** - contains the prediction result per testing set. This include the following files: `fig_metrics.pdf`,`fig_shap.pdf`, `pred_GE.csv`, `pred_CC.csv`, `pred_CC_GE.csv`, `pred_GE.txt`, `pred_CC.txt`, `pred_CC_GE.txt`
 
 Reproducibility: Conda   
 ----------------------
