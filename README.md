@@ -32,8 +32,24 @@ tmux -a snkmk
 ```
 Config file
 -----------
+Please provide input datasets in the Seurat format h5Seurat. 
+
+* To convert h5ad file to h5Seurat, please use:
+
+```bash
+library(seuratDisk)
+Convert("filename.h5ad", dest = "h5seurat", overwrite = TRUE)
+```
+* To save  an rds file as h5Seurat, please use:
+
+```bash
+library(seuratDisk)
+SaveH5Seurat($varibale_name, filename = "filename.h5Seurat")
+```
+
 Please put all your input datasets in one directory. 
-The input datasets should have the followinf metadata columns: 
+
+The input datasets should contain the following metadata columns: 
 * "sampleID": sample IDs
 * "condition": Mild or Severe
 * "batch": the batch name of your data
