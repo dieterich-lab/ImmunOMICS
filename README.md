@@ -136,7 +136,7 @@ docker pull letaylor/severityPred_env:latest
 
 # run the Snakemake pipeline through the container
 # the Snakemake command used below is described in the src/README.md file
-docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID letaylor/severityPred_env:latest "snakemake --snakefile "
+docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID sevpred_env:latest "snakemake --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --cores all --configfile /SNK_REPO/src/config.yaml --printshellcmds"
 ```
 
 
