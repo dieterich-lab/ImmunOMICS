@@ -143,7 +143,12 @@ docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID sevpred
 Reproducibility: Singularity
 ----------------------------
 
-A final option is to load the above Docker image using Singularity, which is designed for high-performance compute systems. To do so, simply add the --use-singularity flag when calling snakemake as descibed in the other README.md docs (within the different modules).
+A final option is to load the above Docker image using Singularity, which is designed for high-performance compute systems. To do so, 
+covert docker image t a singilarity using :
+```bash
+singularity build --sandbox sevpred docker-daemon://sevpred:latest
+```
+Then add the --use-singularity flag when calling snakemake as descibed in the other README.md docs (within the different modules).
 
 As an example, see below. Note that the Docker image is specified in the DOCKER variable of the config file (config.json).
 
