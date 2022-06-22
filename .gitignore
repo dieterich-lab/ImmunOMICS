@@ -7,6 +7,8 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+.keras
+.Rhistory
 .Python
 build/
 develop-eggs/
