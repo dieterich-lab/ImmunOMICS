@@ -40,7 +40,7 @@ Please provide input datasets in the Seurat format h5Seurat.
 library(seuratDisk)
 Convert("filename.h5ad", dest = "h5seurat", overwrite = TRUE)
 ```
-* To save  an rds file as h5Seurat, please use:
+* To save  an rds file as h5Seurat, please use (Check out [Conversions](https://mojaveazure.github.io/seurat-disk/articles/convert-anndata.html) vignette for further details):
 
 ```bash
 library(seuratDisk)
