@@ -125,29 +125,31 @@ An alternative option is to use a Docker image. One can easily generate a Docker
 ```bash
 # build the Docker image using the Dockerfile
 cd ${SNK_REPO}
-docker build -t severityPred_env .
+docker build -t sevpred .
 ```
 
-A pre-compiled Docker image is housed on the Docker Cloud. Download and use this Docker image:
+A pre-compiled Docker image is housed on the DockerHub 'aminale/test:firstpush'. You can download and use the Docker image:
 
 ```bash
 # download the Docker image 
-docker pull letaylor/severityPred_env:latest
+docker pull aminale/test:firstpush
 
 # run the Snakemake pipeline through the container
-# the Snakemake command used below is described in the src/README.md file
-docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID sevpred_env:latest "snakemake --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --cores all --configfile /SNK_REPO/src/config.yaml --printshellcmds"
+docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yaml --printshellcmds"
 ```
 
 
 Reproducibility: Singularity
 ----------------------------
 
-A final option is to load the above Docker image using Singularity, which is designed for high-performance compute systems. To do so, simply add the --use-singularity flag when calling snakemake as descibed in the other README.md docs (within the different modules).
+A final option is to load the above Docker image using Singularity, which is designed for high-performance compute systems. To do so, 
+* add the --use-singularity flag when calling snakemake 
+* bind the path to your input data (e.g --singularity-args "-B /prj").
+* add Docker image as a DOCKER variable in the config file (config.yaml).
 
-As an example, see below. Note that the Docker image is specified in the DOCKER variable of the config file (config.json).
-
+As an example, see below.
 ```bash
-# the Snakemake command used below is described in the qtl/README.md file
-snakemake --snakefile ${SNK_REPO}/src/Snakefile --configfile config.json --predict --use-singularity --singularity-prefix $(pwd)/.snakemake/singularity
+snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile --configfile ${SNK_REPO}/src/config.yaml --use-singularity --singularity-prefix ${SNK_REPO}/.snakemake/singularity --singularity-args "-B /prj" --printshellcmds
 ```
+
+

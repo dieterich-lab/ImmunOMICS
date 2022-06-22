@@ -1,0 +1,148 @@
+#!/usr/bin/env snakemake
+"""
+Snakemake pipeline for COVID-19 severity prediction.
+"""
+
+__version__ = '0.1.0.01'
+
+
+out = config['path_out']+"/"
+inp = config['path_inp']+"/"
+test_set= config['test_data']
+train_set=  config['training_data']
+
+############################################## Quality control ##################################################################
+rule QC:
+    input: inp+"{var1}"
+    wildcard_constraints: var1='(?!merged).+'
+    output:
+        cohort_qc= out+"{var1}/QC.rds"
+    singularity:
+        config['DOCKER']
+    script:
+       "scripts/qc.R"    
+       
+############################################## merge seurat training datasets ###################################################
+rule merge_training:
+    input:expand(out+"{var1}/QC.rds", var1 =train_set.values() )
+    output:
+        cohort_merged= out+"merged_training/QC.rds"
+    singularity:
+        config['DOCKER']
+    script:
+       "scripts/merge_training.R"
+
+############################################ average expression across cells of the same sample #################################
+rule pseudo_bulk:
+    input:
+        cohort_training = out+"{var}/QC.rds"
+    output:
+        cohort_h5Seurat=out+"{var}/pseudo_bulk.h5Seurat",
+#         cohort_h5ad=out+"pseudo_bulk_{name}.h5ad"
+        
+    singularity:
+        config['DOCKER']
+    script:
+       "scripts/pseudo_bulk.R"
+       
+########################################## DE analysis to rank gene per fold change #############################################
+rule get_foldChange:
+    input:
+        cohort1 = out+"merged_training/pseudo_bulk.h5Seurat"
+    output:
+        foldChange=out+"merged_training/fold_change.csv"
+    singularity:
+        config['DOCKER']
+    script:
+       "scripts/get_foldChange.R"
+       
+######################################### extract top genes######################################################################
+rule preprocess_data:
+    input: 
+        pseudo_bulk=out+"{var}/pseudo_bulk.h5Seurat",
+        fc=out+"merged_training/fold_change.csv"
+    output: out+"{var}/selected_ge.csv"
+    singularity:
+        config['DOCKER']
+    script:
+       "scripts/preprocess_data.R"        
+       
+######################################### cell annotation based on seurat multimodal mapping ####################################
+rule annotate_cells:
+    input:
+        cohort_train = out+"{var}/QC.rds",
+    output:
+        annotation=out+"{var}/annotation.csv",
+    params:
+        ref=config['path_ref']
+    singularity:
+        config['DOCKER']
+    script:
+       "scripts/annotate_cells.R"
+     
+######################################## Train the MLP model ####################################################################
+rule train_model:
+    input:
+        CC=out+"merged_training/annotation.csv",
+        GE=out+"merged_training/selected_ge.csv"
+    output:
+       validation=out+"merged_training/val_set.pkl",
+       training=out+"merged_training/train_set.pkl",
+       model_j=out+"merged_training/model_j.pkl",
+       model_e=out+"merged_training/model_e.pkl",
+       model_c=out+"merged_training/model_c.pkl",
+       
+    singularity:
+        config['DOCKER']
+    params: out
+    script: "scripts/training.py"
+    
+###################################### Performance on the validation set ########################################################
+rule predict_val:
+    input:
+       ge = out+"merged_training/val_set.pkl",
+       model_j=out+"merged_training/model_j.pkl",
+       model_e=out+"merged_training/model_e.pkl",
+       model_c=out+"merged_training/model_c.pkl",  
+    output:
+       pred_j=out+"merged_training/pred_j.csv",
+       pred_e=out+"merged_training/pred_e.csv",
+       pred_c=out+"merged_training/pred_c.csv",
+       fig=out+"merged_training/fig_metrics.pdf",           
+       pred_j_=out+"merged_training/pred_j.txt",
+       pred_e_=out+"merged_training/pred_e.txt",
+       pred_c_=out+"merged_training/pred_c.txt",       
+    singularity:
+        config['DOCKER']
+    singularity:
+        config['DOCKER']
+       
+    script: "scripts/predict_val.py"    
+    
+###################################### Performance on the external dataset ######################################################
+rule predict:
+    input:
+       cc = out+"{var1}/annotation.csv",
+       ge = out+"{var1}/selected_ge.csv",
+       model_j=out+"merged_training/model_j.pkl",
+       model_e=out+"merged_training/model_e.pkl",
+       model_c=out+"merged_training/model_c.pkl",  
+       cc_ref = out+"merged_training/annotation.csv",
+       ge_ref = out+"merged_training/selected_ge.csv"       
+    output:
+       pred_j=out+"{var1}/pred_j.csv",
+       pred_e=out+"{var1}/pred_e.csv",
+       pred_c=out+"{var1}/pred_c.csv",
+       fig=out+"{var1}/fig_metrics.pdf",           
+       pred_j_=out+"{var1}/pred_j.txt",
+       pred_e_=out+"{var1}/pred_e.txt",
+       pred_c_=out+"{var1}/pred_c.txt",       
+       shap=out+"{var1}/fig_shap.pdf"       
+    singularity:
+        config['DOCKER']
+       
+    script: "scripts/predict.py"
+    
+###################################### rule all #################################################################################
+rule all:
+       input: expand(out+"{var1}/fig_metrics.pdf", var1 =test_set.values() )
