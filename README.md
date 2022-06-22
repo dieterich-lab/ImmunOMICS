@@ -43,28 +43,18 @@ Here is the config file for the testing example.
 
 ```
 # INPUT & OUTPUT PATHS
-path_out: "../../output_berlin_stan"          # path to the output directory, if it doesn't exist it will be created 
-path_inp: "../data"           # path to the directory containing the input BAM files
-path_ref: "../data/pbmc_multimodal.h5seurat"         # reference transcriptome 
+path_out: "../../output"          # path to the output directory, if it doesn't exist it will be created 
+path_inp: "../data"           # path to the directory containing input datasets in h5Seurat format
+path_ref: "../data/pbmc_multimodal.h5seurat"         # reference dataset for Seurat mapping  
 
 
 # INPUTS PARAMS
-training_data:               # bam files for 2 (pairewise comparison) or 3 conditions (3 way comparison)
-    set14:  'stanford_pbmc_29.h5Seurat'        # testing set 2
-#     set41:  'stanford_pbmc_29.h5Seurat'        # testing set 2
-#     set4:  'mgh.h5Seurat'        # testing set 2
-    set1: 'berlin.h5Seurat'         
-
-test_data:               # bam files for 2 (pairewise comparison) or 3 conditions (3 way comparison)
-#     set1:  'berlin.h5Seurat'        # testing set 1
-    set3:  'asan_.h5Seurat'        # testing set 2
-#     set4:  'stanford_pbmc_29.h5Seurat'        # testing set 2
-#     set5:  'stanford_29.h5Seurat'        # testing set 2
-    set7:  'cam.h5Seurat'        # testing set 2
-#     set6:  'ncl.h5Seurat'        # testing set 2
-    set8:  'ucl.h5Seurat'        # testing set 2
-    set9:  'mgh.h5Seurat'        # testing set 2
-    set10: 'bonn.h5Seurat'         
+training_data:               # Training datasets
+    set1:  'bonn.h5Seurat'        
+    
+test_data:               # Testing datasets
+    set1:  'berlin.h5Seurat'        
+    set3:  'asan_.h5Seurat'        
 
 ```
 Note that you can set as many training and testing datasets as you want. Datasets under `training_data` will be merged and 80% will be used for the training and 20 % for the validation split randomly 30 times. 
