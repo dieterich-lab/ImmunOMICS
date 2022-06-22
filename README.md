@@ -78,13 +78,25 @@ Once the pipeline has run successfully you should expect the following files in 
 *   **`merge_training/`:**
     *   `QC.rds` - merged data
     *   `pseudo_bulk.h5Seurat` - expression average of all genes
-    *   `fold_change.csv` - findMarker output of the DE between conditions. 
+    *   `fold_change.csv` - output of the DE analysis between conditions (findMarkers). 
     *   `selected_ge.csv` - expression average of the top genes
     *   `annotation.csv` - matrix representing number of each cells per sample & type
-    *   `model.pkl` - the learned model
+    *   `model_CC.pkl` - the learned model based on the Cell Composition (CC)
+    *   `model_GE.pkl` - the learned model based on the Gene Expression (GE)
+    *   `model_CC_GE.pkl` - the learned joint model based on the Cell Composition (CC) and the Gene Expression (GE)
     *   `train_set.pkl` - list of the training sets from the 30 samplings
     *   `val_set.pkl` - list of the training sets from the 30 samplings
-    
+    *   `val_set.pkl` - list of the training sets from the 30 samplings
+    *   `fig_metrics.pdf` - figures representing the diffrent evaluation meterics (AUROC, AUPRC, Accuracy, ...) between the three models "CC, GE and CC&GE"
+    *   `fig_shap.pdf` - figures representing barplots and violin plots of SHAP values from the joint model "CC&GE"
+    *   `fig_shap.pdf` - figures representing barplots and violin plots of SHAP values from the joint model "CC&GE"
+    *   `fig_shap.pdf` - figures representing barplots and violin plots of SHAP values from the joint model "CC&GE"
+    *   `pred_GE.csv` - prediction output scores per column of the GE model (you will get as many columns as the number of samplings)
+    *   `pred_CC.csv` - prediction output scores per column of the CC model (you will get as many columns as the number of samplings)
+    *   `pred_CC_GE.csv` - prediction output scores per column of the joint model (you will get as many columns as the number of samplings)
+    *   `pred_GE.txt` - evaluation meterics represented by the mean and the confidence interval of 95% for the GE model
+    *   `pred_CC.txt` - evaluation meterics represented by the mean and the confidence interval of 95% for the CC model
+    *   `pred_CC_GE.txt` - evaluation meterics represented by the mean and the confidence interval of 95% for the joint model 
 
 Reproducibility: Conda   
 ----------------------
