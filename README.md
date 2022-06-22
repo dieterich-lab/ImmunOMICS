@@ -149,5 +149,5 @@ As an example, see below. Note that the Docker image is specified in the DOCKER 
 
 ```bash
 # the Snakemake command used below is described in the qtl/README.md file
-snakemake --snakefile ${SNK_REPO}/src/Snakefile --configfile config.json --predict --use-singularity --singularity-prefix $(pwd)/.snakemake/singularity
+snakemake "../../output_berlin_stan/merged_training/pred_j.csv" --snakefile $(pwd)/snakefile --configfile $(pwd)/config.yaml --use-singularity --singularity-prefix $(pwd)/.snakemake/singularity --printshellcmds --cores all
 ```
