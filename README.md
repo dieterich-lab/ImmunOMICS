@@ -163,8 +163,8 @@ mamba create -c conda-forge -c bioconda -n snakemake snakemake
 ```
 
 * add the --use-singularity flag when calling snakemake 
-* bind the path to your input data (e.g --singularity-args "-B /prj").
-* add Docker image as a DOCKER variable in the config file (config.yaml).
+* bind the path to your input data (e.g --singularity-args "-B /prj") to the command.
+Note that the docker image was already added as a DOCKER variable to the config file (config.yaml).
 
 As an example, see below.
 ```bash
