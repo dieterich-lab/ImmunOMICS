@@ -159,7 +159,7 @@ A final option is to load the above Docker image using Singularity, designed for
 
 ```bash
 conda activate base
-mamba create -c conda-forge -c bioconda -n snakemake snakemake
+conda install snakemake
 ```
 
 * add the --use-singularity flag when calling snakemake 
