@@ -153,3 +153,8 @@ snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile --configfile ${S
 ```
 
 
+Ressource Requirement
+---------------------
+
+Seurat reference mapping requires high memory usage, so please be sure to provide enough ressources according to your dataset size.
+
