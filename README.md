@@ -7,7 +7,7 @@ Snakemake pipeline for predicting severity in COVID-19.
 Overview
 --------
 
-The workflow is.  All code is housed within scripts. In addition, this directory houses the data subdirectory which contains data for minimal examples.
+The workflow is. All code is housed within scripts. In addition, this directory houses the data subdirectory, which contains data for minimal examples.
 
 Quick Setup
 -----------
@@ -21,7 +21,7 @@ SNK_REPO="`pwd`/Prediction_scOmics"
 
 ```
 
-If you are running jobs on the cluster, it is best to first start a [tmux](https://github.com/tmux/tmux) session so that the session may be re-attached at a later time point. 
+If you are running jobs on the cluster, it is best first to start a [tmux](https://github.com/tmux/tmux) session so that the session may be re-attached at a later time point. 
 
 ```bash
 # start session
@@ -73,34 +73,34 @@ test_data:               # Testing datasets
     set3:  'asan_.h5Seurat'        
 
 ```
-Note that you can set as many training and testing datasets as you want. Datasets under `training_data` will be merged and 80% will be used for the training and 20 % for the validation split randomly 30 times. 
+Note that you can set as many training and testing datasets as you want. Datasets under `training_data` will be merged, and 80% will be used for the training, and 20 % for the validation split randomly 30 times. 
 
-In case you want to test more datasets after generating your prediction model, just add the name of the datasets to the `testing_data` dictionnary and snakemake will generate only the missing outputs.
+If you want to test more datasets after generating your prediction model, add the name of the datasets to the `testing_data` dictionary, and snakemake will generate only the missing outputs.
 
 Output files
 -----------------------
 
-Once the pipeline has run successfully you should expect the following files in the output directory:
+Once the pipeline has run successfully, you should expect the following files in the output directory:
 *   **`merge_training/`:**
     *   `QC.rds` - merged data
     *   `pseudo_bulk.h5Seurat` - expression average of all genes
     *   `fold_change.csv` - output of the DE analysis between conditions (findMarkers). 
     *   `selected_ge.csv` - expression average of the top genes
-    *   `annotation.csv` - matrix representing number of each cells per sample & type
+    *   `annotation.csv` - matrix representing the number of each cell per sample & type
     *   `model_CC.pkl` - the learned model based on the Cell Composition (CC)
     *   `model_GE.pkl` - the learned model based on the Gene Expression (GE)
     *   `model_CC_GE.pkl` - the learned joint model based on the Cell Composition (CC) and the Gene Expression (GE)
     *   `train_set.pkl` - list of the training sets from the 30 samplings
     *   `val_set.pkl` - list of the training sets from the 30 samplings
     *   `val_set.pkl` - list of the training sets from the 30 samplings
-    *   `fig_metrics.pdf` - figures representing the diffrent evaluation meterics (AUROC, AUPRC, Accuracy, ...) between the three models "CC, GE and CC&GE"
+    *   `fig_metrics.pdf` - figures representing the different evaluation metrics (AUROC, AUPRC, Accuracy, ...) between the three models "CC, GE, and CC&GE"
     *   `fig_shap.pdf` - figures representing barplots and violin plots of SHAP values from the joint model "CC&GE" on the validation set
     *   `pred_GE.csv` - prediction output scores per column of the validation set using the GE model (you will get as many columns as the number of samplings)
     *   `pred_CC.csv` - prediction output scores per column of the validation set using the CC model (you will get as many columns as the number of samplings)
-    *   `pred_CC_GE.csv` - prediction output scores per columnof the validation set using the joint model (you will get as many columns as the number of samplings)
-    *   `pred_GE.txt` - evaluation meterics represented by the mean and the confidence interval of 95% of the validation set using the GE model
-    *   `pred_CC.txt` - evaluation meterics represented by the mean and the confidence interval of 95% of the validation set using the CC model
-    *   `pred_CC_GE.txt` - evaluation meterics represented by the mean and the confidence interval of 95% of the validation set using the joint model
+    *   `pred_CC_GE.csv` - prediction output scores per column of the validation set using the joint model (you will get as many columns as the number of samplings)
+    *   `pred_GE.txt` - evaluation metrics represented by the mean and the confidence interval of 95% of the validation set using the GE model
+    *   `pred_CC.txt` - evaluation metrics represented by the mean and the confidence interval of 95% of the validation set using the CC model
+    *   `pred_CC_GE.txt` - evaluation metrics represented by the mean and the confidence interval of 95% of the validation set using the joint model
 *   **`{test_data_filename}/`:** - contains the prediction result per testing set. This include the following files: `fig_metrics.pdf`,`fig_shap.pdf`, `pred_GE.csv`, `pred_CC.csv`, `pred_CC_GE.csv`, `pred_GE.txt`, `pred_CC.txt`, `pred_CC_GE.txt`
 
 Reproducibility: Conda   
@@ -120,7 +120,7 @@ source activate severityPred_env
 Reproducibility: Docker
 -----------------------
 
-An alternative option is to use a Docker image. One can easily generate a Docker image of all of the software used in this repository by using the Dockerfile. 
+An alternative option is to use a Docker image. One can easily generate a Docker image of all of the software used in this repository using the Dockerfile. 
 
 ```bash
 # build the Docker image using the Dockerfile
@@ -142,7 +142,7 @@ docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID test:fi
 Reproducibility: Singularity
 ----------------------------
 
-A final option is to load the above Docker image using Singularity, which is designed for high-performance compute systems. To do so, 
+A final option is to load the above Docker image using Singularity, designed for high-performance compute systems. To do so: 
 * add the --use-singularity flag when calling snakemake 
 * bind the path to your input data (e.g --singularity-args "-B /prj").
 * add Docker image as a DOCKER variable in the config file (config.yaml).
@@ -153,8 +153,8 @@ snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile --configfile ${S
 ```
 
 
-Ressource Requirement
+Resource Requirement
 ---------------------
 
-Seurat reference mapping requires high memory usage, so please be sure to provide enough ressources according to your dataset size.
+Seurat reference mapping requires high memory usage, so please provide enough resources according to your dataset size.
 
