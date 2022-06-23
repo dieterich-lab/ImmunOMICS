@@ -108,12 +108,24 @@ Reproducibility: Conda
 
 One option to enhance reproducibility is to install software used via Conda.
 
+You can find Miniconda installation instructions for Linux [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html).
+Make sure you install the [Miniconda Python3 distribution](https://docs.conda.io/en/latest/miniconda.html#linux-installers).
+```
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+```
+For performance and compatibility reasons you should install `Mamba` via conda to install Snakemake. See [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for more details.
+```
+conda install -c conda-forge mamba
+```
+Once you have installed Conda and Mamba, you can install the software dependecies via the following commands:
+
 ```bash
 # install environment using Conda
-conda env create --file ${SNK_REPO}/environment.yml
+mamba env create --file ${SNK_REPO}/environment.yml
 
 # activate the new Conda environment
-source activate severityPred_env
+conda activate severityPred_env
 ```
 
 
@@ -143,6 +155,13 @@ Reproducibility: Singularity
 ----------------------------
 
 A final option is to load the above Docker image using Singularity, designed for high-performance compute systems. To do so: 
+* install snakemake via conda (See [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for more details)
+
+```bash
+conda activate base
+mamba create -c conda-forge -c bioconda -n snakemake snakemake
+```
+
 * add the --use-singularity flag when calling snakemake 
 * bind the path to your input data (e.g --singularity-args "-B /prj").
 * add Docker image as a DOCKER variable in the config file (config.yaml).
