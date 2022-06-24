@@ -2,10 +2,10 @@
 
 #SBATCH -n 1
 #SBATCH -N 1
-#SBATCH --mem=100G
+#SBATCH --mem=500G
 #SBATCH -c 10
 #SBATCH --job-name="scWorkflow"
-#SBATCH --output=pred_berlin_stan.txt
+#SBATCH --output=output_bonn_berlin.txt
 #SBATCH -p general
 
 # source activate severityPred_env

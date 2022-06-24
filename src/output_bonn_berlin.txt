@@ -1,0 +1,36 @@
+KeyError in line 9 of /beegfs/prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/src/snakefile:
+'path_out'
+  File "/beegfs/prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/src/snakefile", line 9, in <module>
+srun: error: callisto: task 0: Exited with exit code 1
+Building DAG of jobs...
+Pulling singularity image docker://aminale/test:firstpush.
+Using shell: /usr/bin/bash
+Provided cores: 10
+Rules claiming more threads will be scaled down.
+Job stats:
+job            count    min threads    max threads
+-----------  -------  -------------  -------------
+all                1              1              1
+predict            2              1              1
+predict_val        1              1              1
+train_model        1              1              1
+total              5              1              1
+
+Select jobs to execute...
+
+[Fri Jun 24 17:15:12 2022]
+rule train_model:
+    input: /prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/output_bonn_berlin/merged_training/annotation.csv, /prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/output_bonn_berlin/merged_training/selected_ge.csv
+    output: /prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/output_bonn_berlin/merged_training/val_set.pkl, /prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/output_bonn_berlin/merged_training/train_set.pkl, /prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/output_bonn_berlin/merged_training/model_CC_GE.pkl, /prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/output_bonn_berlin/merged_training/model_GE.pkl, /prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/output_bonn_berlin/merged_training/model_CC.pkl
+    jobid: 11
+    resources: tmpdir=/tmp
+
+python /beegfs/prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/src/.snakemake/scripts/tmpon0bw0uo.training.py
+Activating singularity image /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/src/.snakemake/singularity/832e3cd54b08b0943b10d9357d10dace.simg
+2022-06-24 17:15:16.667035: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcudart.so.11.0'; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /.singularity.d/libs
+2022-06-24 17:15:16.667067: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+2022-06-24 17:15:20.969995: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /.singularity.d/libs
+2022-06-24 17:15:20.970042: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
+2022-06-24 17:15:20.970062: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (callisto): /proc/driver/nvidia/version does not exist
+2022-06-24 17:15:20.970327: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.

@@ -1,0 +1,23 @@
+DOCKER: "docker://aminale/test:firstpush" # Docker image
+path_out: "/prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/output_bonn_berlin_wmt"  # path to the output directory, if it doesn't exist it will be created 
+path_inp: "/prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/data"     # path to the directory containing the input datasets
+path_ref: "/prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/data/pbmc_multimodal.h5seurat"      # reference dataset for seurat mapping 
+
+
+# INPUTS PARAMS
+training_data:    # training datasets (they will be merged, then 80% will be used for thetraining and 20% for the validation)
+    set14:  'bonn.h5Seurat'       
+#     set41:  'stanford_pbmc_29.h5Seurat'        
+#     set4:  'mgh.h5Seurat'       
+    set1: 'berlin.h5Seurat'         
+
+test_data:               # testing datasets
+#     set1:  'berlin.h5Seurat'        
+    set3:  'asan_.h5Seurat'       
+    set4:  'stanford_pbmc_29.h5Seurat'        
+#     set5:  'stanford_29.h5Seurat'        
+#     set7:  'cam.h5Seurat'        
+#     set6:  'ncl.h5Seurat'        
+#     set8:  'ucl.h5Seurat'        
+#     set9:  'mgh.h5Seurat'        
+#     set10: 'bonn.h5Seurat'         

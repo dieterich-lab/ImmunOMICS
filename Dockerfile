@@ -1,5 +1,7 @@
 FROM continuumio/miniconda3:latest
 
+LABEL maintainer="Amina Lemsara <lemsaraamina@gmail.com>"
+
 # Set up locales properly
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends locales && \
@@ -41,7 +43,7 @@ WORKDIR /tmp
 COPY environment.yml /tmp/environment.yml
 
 # install conda environment
-# NOTE: conda clean -tipsy
+# NOTE: conda clean -tipy
 #   removes everything w/o confirmation (leaves all environments functional).
 RUN conda update conda --yes && \
     #conda env create --name container_env --file environment.yml && \
@@ -58,10 +60,14 @@ RUN conda update conda --yes && \
 # ENV PATH /opt/conda/envs/container_env/bin:$PATH
 # ENV CONDA_DEFAULT_ENV container_env
 # ENV CONDA_PREFIX /opt/conda/envs/container_env
-
-
 # set wd to user home
+VOLUME ${HOME}
 WORKDIR ${HOME}
+COPY src ./
+RUN chmod +x ./src
+
+RUN snakemake --cores all all --snakefile scr/snakefile --configfile data/config.yml --printshellcmds
+
 
 # clear tmp if there is anything in there...
 RUN rm -rf /tmp/*

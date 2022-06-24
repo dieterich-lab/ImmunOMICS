@@ -12,7 +12,7 @@ from collections import defaultdict
 import shap
 tf.compat.v1.disable_v2_behavior()
 
-dim_exp=15
+dim_exp=snakemake.params[0]
 dim_cells=29
 with open(snakemake.input[0], 'rb') as b:
     test=pickle.load(b)

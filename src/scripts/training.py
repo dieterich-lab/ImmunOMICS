@@ -152,17 +152,8 @@ def provide_stratified_bootstap_sample_indices(bs_sample,percent):
     for idx_stratum_var, n_stratum_var in strata.iteritems():
         data_index_stratum = list(np.where(who == idx_stratum_var[0])[0])
         kk=round(len(data_index_stratum )*percent)
-#         if idx_stratum_var[0] == '7':
-#             kk= kk+1
-#         if idx_stratum_var[0] == '5':
-# #             print(kk)
-#             kk= kk-1        
         bs_index_list_stratified.extend(random.sample(data_index_stratum , k = kk))
-#     print(who.loc[bs_index_list_stratified,:].values)
     return bs_index_list_stratified
-
-
-# In[ ]:
 
 
 sets = np.concatenate((x_exp, x_cell), axis=1)
@@ -170,18 +161,19 @@ sets = np.column_stack((sets, Ytrain))
 dim_exp = x_exp.shape[1]
 dim_cells = x_cell.shape[1]
 n_iterations = 30
-# run bootstrap
 train_set = list()
 val_set = list()
 model_j={}
 model_e={}
 model_c={}
-
+random.seed(42)
+seeds = random.sample(range(0, 500), 30)
 for i in range(n_iterations):
+    random.seed(seeds[i])
     print(i)
     # prepare train and test sets
     all_sets= x_exp,
-#     train = resample(sets, n_samples=n_size)
+    #train = resample(sets, n_samples=n_size)
     bs_index_list_stratified= provide_stratified_bootstap_sample_indices(sets,0.8)
     train= sets[bs_index_list_stratified , :]
     test = np.array([x for x in sets if x.tolist() not in train.tolist()])
@@ -195,9 +187,8 @@ for i in range(n_iterations):
     model, history= training(model, train[:,:dim_exp]
                              , train[:,-1],(test[:,:dim_exp],test[:,-1]))
     model_e[i]=load_model(model_j_f+'.h5')
-    
+ 
     # evaluate model
-    
     model = build_classifier(train[:,dim_exp:(dim_exp+dim_cells)])
     model, history= training(model, train[:,dim_exp:(dim_exp+dim_cells)]
                              , train[:,-1],(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1]))
