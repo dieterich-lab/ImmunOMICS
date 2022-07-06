@@ -147,7 +147,7 @@ A pre-compiled Docker image is housed on the DockerHub 'aminale/test:firstpush'.
 docker pull aminale/test:firstpush
 
 # run the Snakemake pipeline through the container
-docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yaml --printshellcmds"
+docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yaml --printshellcmds"
 ```
 
 
