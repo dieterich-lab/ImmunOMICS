@@ -171,6 +171,10 @@ Note that the docker image was already added as a DOCKER variable to the config 
 As an example, see below.
 ```bash
 snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile --configfile ${SNK_REPO}/src/config.yml --use-singularity --singularity-prefix ${SNK_REPO}/.snakemake/singularity --singularity-args "-B /prj" --printshellcmds
+
+or 
+
+singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission --workdir /prj/NUM_CODEX_PLUS/Amina/CellSubmission Prediction_scOmics/singularity/test1_latest-2022-07-06-ebcd8a390a94.sif "snakemake --cores all all --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/src/snakefile  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/src/config.yml"
 ```
 
 
