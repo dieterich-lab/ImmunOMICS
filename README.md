@@ -147,7 +147,7 @@ A pre-compiled Docker image is housed on the DockerHub 'aminale/test:firstpush'.
 docker pull aminale/test:firstpush
 
 # run the Snakemake pipeline through the container
-docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yaml --printshellcmds"
+docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yml --printshellcmds"
 ```
 
 
@@ -168,7 +168,7 @@ Note that the docker image was already added as a DOCKER variable to the config 
 
 As an example, see below.
 ```bash
-snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile --configfile ${SNK_REPO}/src/config.yaml --use-singularity --singularity-prefix ${SNK_REPO}/.snakemake/singularity --singularity-args "-B /prj" --printshellcmds
+snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile --configfile ${SNK_REPO}/src/config.yml --use-singularity --singularity-prefix ${SNK_REPO}/.snakemake/singularity --singularity-args "-B /prj" --printshellcmds
 ```
 
 
