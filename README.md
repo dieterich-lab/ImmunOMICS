@@ -149,7 +149,7 @@ docker pull aminale/test:firstpush
 # run the Snakemake pipeline through the container
 #docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yml --printshellcmds"
 
-docker run -it --rm --mount "type=bind,src=$(pwd),dst=/prj/NUM_CODEX_PLUS/Amina/CellSubmission" --workdir /prj/NUM_CODEX_PLUS/Amina/CellSubmission test1 "snakemake --cores all all --snakefile Prediction_scOmics/src/snakefile  --configfile Prediction_scOmics/src/config.yml"
+docker run -it --rm --mount "type=bind,src=$(pwd),dst=/prj/NUM_CODEX_PLUS/Amina/CellSubmission" immun2sev "snakemake --cores all all --snakefile src/snakefile  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/src/config.yml"
 ```
 
 
