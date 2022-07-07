@@ -30,7 +30,7 @@ If you are running jobs on the cluster, it is best first to start a [tmux](https
 
 ```bash
 # start session
-tmux new -s snkmk
+tmux new -s snkmk 
 
 # log back into a session
 tmux -a snkmk
