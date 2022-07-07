@@ -7,10 +7,16 @@ Snakemake pipeline for predicting severity in COVID-19.
 Overview
 --------
 
-The workflow is. 
+The workflow shown below allows predicting COVID-19 severity from scRNA-seq data. The workflow parameters should be set in the config file provided as a parameter for the snakemake command. The inputs are: 
 
+- The training sets: list of datasets that will be used for the training. 
+- The testing sets: list of datasets to be tested by the trained model
+- The reference dataset used for Seurat mapping as an example you can use [seurat example](https://www.sciencedirect.com/science/article/pii/S0092867421005833?via%3Dihub)
+- The output directory
 
-All code is housed within scripts. In addition, this directory houses the data subdirectory, which contains data for minimal examples.
+<p align="center">
+  <img src="immun2sev.png" width="1000">
+</p>
 
 Quick Setup
 -----------
@@ -70,10 +76,11 @@ path_ref: "../data/pbmc_multimodal.h5seurat"         # reference dataset for Seu
 # INPUTS PARAMS
 training_data:               # Training datasets
     set1:  'bonn.h5Seurat'        
+    set2:  'berlin.h5Seurat'        
     
 test_data:               # Testing datasets
-    set1:  'berlin.h5Seurat'        
-    set3:  'asan_.h5Seurat'        
+    set3:  'korean.h5Seurat'        
+    set3:  'stanford_pbmc.h5Seurat'        
 
 ```
 Note that you can set as many training and testing datasets as you want. Datasets under `training_data` will be merged, and 80% will be used for the training, and 20 % for the validation split randomly 30 times. 
