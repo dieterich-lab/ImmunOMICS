@@ -21,3 +21,5 @@ test_data:               # testing datasets
 #     set8:  'ucl.h5Seurat'        
 #     set9:  'mgh.h5Seurat'        
 #     set10: 'bonn.h5Seurat'         
+
+nb_topGenes: 15
