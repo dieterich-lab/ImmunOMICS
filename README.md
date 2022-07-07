@@ -154,7 +154,7 @@ docker pull aminale/test:firstpush
 docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yml --printshellcmds"
 
 ```
-A pre-compiled Docker image including snakemake pipeline is housed on the DockerHub 'aminale/immun2sev:firstpush'. You can download and use the Docker image as follow:
+A pre-compiled all in one Docker image including snakemake pipeline is housed on the DockerHub 'aminale/immun2sev:firstpush'. You can download and use the Docker image as follow:
 
 ```bash
 # download the Docker image 
@@ -168,6 +168,9 @@ Reproducibility: Singularity
 ----------------------------
 
 A final option is to load the above Docker image using Singularity, designed for high-performance compute systems. To do so: 
+
+1- Using singularity as an option for snakemake
+
 * install snakemake via conda (See [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for more details)
 
 ```bash
@@ -187,13 +190,29 @@ or
 
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission Prediction_scOmics/singularity/immun2sev_latest-2022-07-07-938495849ed1.sif "snakemake --cores all all --snakefile src/snakefile  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/src/config.yml --directory /home/alemsara"
 ```
+1- Using all in one image
 
+* install snakemake via conda (See [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for more details)
+
+```bash
+conda activate base
+conda install snakemake
+```
+
+* add the --use-singularity flag when calling snakemake 
+* bind the path to your input data (e.g --singularity-args "-B /prj") to the command.
+Note that the docker image was already added as a DOCKER variable to the config file (config.yaml).
+
+As an example, see below.
+```bash
+singularity run -B /Host_directory immun2sev_latest-2022-07-07-938495849ed1.sif "snakemake --cores all all --snakefile src/snakefile  --configfile /path_to_config/config.yml --directory /writable_directory"
+```
 
 Notes & Tips
 ------------
 
 - Seurat reference mapping requires high memory usage, so please provide enough resources according to your dataset size.
-- Please make sure to mount/bind all host reposotories you are using into your container and you are setting a writable directory for the --directory option in snakemake. 
+- Please make sure to mount/bind all host reposotories you are using (for inputs and outputs) into your container and you are setting a writable directory for the --directory option in snakemake. 
 - To convert docker image to singularity on HPC, you can use docker images [docker2singularity](https://github.com/singularityhub/docker2singularity) 
 
 ```bash
