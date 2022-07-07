@@ -148,10 +148,6 @@ An alternative option is to use a Docker image. One can easily generate a Docker
 # build the Docker image using the Dockerfile
 cd ${SNK_REPO}
 docker build -t immun2sev .
-
-# push to DockerHub
-docker image tag immun2sev:latest aminale/immun2sev:firstpush
-docker image push aminale/immun2sev:firstpush
 ```
 
 1- A pre-compiled Docker image without snakemake pipeline is housed on the DockerHub 'aminale/test:firstpush'. You can download and use the Docker image and run using the cloned repository as follow:
@@ -197,7 +193,7 @@ As an example, see below.
 snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile --configfile ${SNK_REPO}/src/config.yml --use-singularity --singularity-prefix ${SNK_REPO}/.snakemake/singularity --singularity-args "-B /prj" --printshellcmds
 
 ```
-2- Using all in one image
+2- Using all-in-one image
 
 * install snakemake via conda (See [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for more details)
 
@@ -210,12 +206,3 @@ Notes & Tips
 
 - Seurat reference mapping requires high memory usage, so please provide enough resources according to your dataset size.
 - Please make sure to mount/bind all host repositories you use (for inputs and outputs) into your container and set a writable directory for the --directory option in snakemake. 
-- To convert docker image to singularity on HPC, you can use docker images [docker2singularity](https://github.com/singularityhub/docker2singularity) 
-
-```bash
-docker pull docker2singularity
-
-#conversion
-docker run -v /var/run/docker.sock:/var/run/docker.sock -v /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity:/output -t --rm quay.io/singularity/docker2singularity test1:latest
-```
-
