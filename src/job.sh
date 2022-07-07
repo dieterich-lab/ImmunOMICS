@@ -14,6 +14,6 @@ srun snakemake --cores --unlock
 # srun snakemake --cores all all --rerun-incomplete -s snakefile
 
 
-srun snakemake all --snakefile $(pwd)/snakefile --configfile $(pwd)/config.yaml --directory $(pwd) --use-singularity --singularity-prefix $(pwd)/.snakemake/singularity --printshellcmds --singularity-args "-B /prj" --cores all 
+srun snakemake all --snakefile $(pwd)/snakefile --configfile $(pwd)/config.yml --directory $(pwd) --use-singularity --singularity-prefix $(pwd)/.snakemake/singularity --printshellcmds --singularity-args "-B /prj" --cores all 
 
 # srun snakemake "../../output_berlin_stan/merged_training/pred_j.csv" --snakefile snakefile --configfile config.yaml --cores all

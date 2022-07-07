@@ -1,5 +1,5 @@
 DOCKER: "docker://aminale/test:firstpush" # Docker image
-path_out: "/prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/output_bonn_berlin_wmt"  # path to the output directory, if it doesn't exist it will be created 
+path_out: "/prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/output"  # path to the output directory, if it doesn't exist it will be created 
 path_inp: "/prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/data"     # path to the directory containing the input datasets
 path_ref: "/prj/NUM_CODEX_PLUS/Amina/CellSubmission/severityPred/data/pbmc_multimodal.h5seurat"      # reference dataset for seurat mapping 
 
@@ -21,3 +21,4 @@ test_data:               # testing datasets
 #     set8:  'ucl.h5Seurat'        
 #     set9:  'mgh.h5Seurat'        
 #     set10: 'bonn.h5Seurat'         
+nb_topGenes: 13

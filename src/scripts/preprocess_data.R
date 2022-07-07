@@ -13,7 +13,7 @@ top <- fc %>% top_n(n = nb_genes, wt = abs(avg_log2FC))
 '%!in%' <- function(x, y)
   ! ('%in%'(x, y))
 top= rownames(top)
-top = top[top %!in% c('MTRNR2L8','MTRNR2L12')]
+# top = top[top %!in% c('MTRNR2L8','MTRNR2L12')]
 outer= top[top %!in% rownames(ch_avr)]
 inner= top[top %in% rownames(ch_avr)]
 pseud_mtx = as.data.frame(t(as.matrix(ch_avr@assays$RNA@data[inner, ])))

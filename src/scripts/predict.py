@@ -18,6 +18,8 @@ x_exp=pd.read_csv (snakemake.input[1],index_col=0)
 x_exp=x_exp.loc[x_exp['condition'].isin(['Mild','Severe']),:]
 x_cell=x_cell.loc[x_cell['condition'].isin(['Mild','Severe']),:]
 x_cell=x_cell.drop(['Doublet','Eryth','NK_CD56bright'],axis=1)
+x_exp=x_exp.drop(['MTRNR2L12','MTRNR2L8'],axis=1)
+
 model_j_f=snakemake.input[2]
 model_j_e=snakemake.input[3]
 model_j_c=snakemake.input[4]
@@ -176,12 +178,14 @@ pp.close()
 
 
 
-#SHAP values
+# #SHAP values
 x_ref_cell=pd.read_csv (snakemake.input[5],index_col=0)
 x_ref_exp=pd.read_csv (snakemake.input[6],index_col=0)
 x_ref_exp=x_ref_exp.loc[x_ref_exp['condition'].isin(['Mild','Severe']),:]
 x_ref_cell=x_ref_cell.loc[x_ref_cell['condition'].isin(['Mild','Severe']),:]
 x_ref_cell=x_ref_cell.drop(['Doublet','Eryth','NK_CD56bright'],axis=1)
+x_ref_exp=x_ref_exp.drop(['MTRNR2L12','MTRNR2L8'],axis=1)
+
 x_ref_cell=x_ref_cell.loc[x_ref_exp.index,:]
 
 x_ref_cell= x_ref_cell.drop('condition',axis=1)
@@ -190,17 +194,21 @@ x_ref_exp= x_ref_exp.drop('who_score',axis=1)
 x_ref_exp = minmax_scale(x_ref_exp, axis = 0)
 x_ref_cell= x_ref_cell.div(x_ref_cell.sum(axis=1), axis=0)
 
+training_set=pd.read_csv (snakemake.input[7],index_col=0)
 
-for model_joint in model_j.values():
-    explainer = shap.DeepExplainer(model_joint, [x_ref_exp,x_ref_cell])
-    shap_values = explainer.shap_values([np.array(x_exp),np.array(x_cell)])
-    if model_joint ==model_j[0]:
-        shap_values_all_exp=shap_values[0][0]
-        shap_values_all_cell=shap_values[0][1]                
+i=0
+for model_joint in model_e.values():
+    x_ref_exp=training_set[i][:,:dim(x_exp)]
+    i=i+1
+    explainer = shap.DeepExplainer(model_joint, x_ref_exp)
+    shap_values = explainer.shap_values(np.array(x_exp))
+    if model_joint ==model_e[0]:
+        shap_values_all_exp=shap_values[0]
+#         shap_values_all_cell=shap_values[0][1]                
     else:
-        shap_values_all_exp=shap_values_all_exp+shap_values[0][0]
-        shap_values_all_cell=shap_values_all_cell+shap_values[0][1]    
-nb=len(model_j)
+        shap_values_all_exp=shap_values_all_exp+shap_values[0]
+#         shap_values_all_cell=shap_values_all_cell+shap_values[0][1]    
+nb=len(model_e)
 f1 = plt.figure()
 with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
     shap.summary_plot(shap_values_all_exp/nb, plot_type= 'violin',features=np.array(x_exp)
@@ -210,20 +218,20 @@ f2 = plt.figure()
 with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
     shap.summary_plot(shap_values_all_exp/nb, plot_type= 'bar',features=np.array(x_exp)
                       , feature_names =genes,color_bar_label='Feature value',show=False)
-f3 = plt.figure()
+# f3 = plt.figure()
 
-with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
-    shap.summary_plot(shap_values_all_cell/nb, plot_type= 'violin',features=x_cell
-                      , feature_names =cells,color_bar_label='Feature value',show=False)
-f4 = plt.figure()
-with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
-    shap.summary_plot(shap_values_all_cell/nb, plot_type= 'bar',features=np.array(x_cell)
-                      , feature_names =cells,color_bar_label='Feature value',show=False)
+# with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
+#     shap.summary_plot(shap_values_all_cell/nb, plot_type= 'violin',features=x_cell
+#                       , feature_names =cells,color_bar_label='Feature value',show=False)
+# f4 = plt.figure()
+# with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
+#     shap.summary_plot(shap_values_all_cell/nb, plot_type= 'bar',features=np.array(x_cell)
+#                       , feature_names =cells,color_bar_label='Feature value',show=False)
     
 pp = PdfPages(out_shap)
 pp.savefig(f1)
 pp.savefig(f2)
-pp.savefig(f3)
-pp.savefig(f4)
+# pp.savefig(f3)
+# pp.savefig(f4)
 pp.close()
     

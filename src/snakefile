@@ -61,7 +61,7 @@ rule preprocess_data:
         pseudo_bulk=out+"{var}/pseudo_bulk.h5Seurat",
         fc=out+"merged_training/fold_change.csv"
     output: out+"{var}/selected_ge.csv"
-    params:config['nb_topGenes']
+    params:config.get('nb_topGenes',15)
     singularity:
         config['DOCKER']
     script:
@@ -127,7 +127,9 @@ rule predict:
        model_c=out+"merged_training/model_CC.pkl",  
        cc_ref = out+"merged_training/annotation.csv",
        ge_ref = out+"merged_training/selected_ge.csv",
-       pred_v=out+"merged_training/pred_CC_GE.csv"       
+       #pred_v=out+"merged_training/pred_CC_GE.csv"      
+       training=out+"merged_training/train_set.pkl",
+       
     output:
        pred_j=out+"{var1}/pred_CC_GE.csv",
        pred_e=out+"{var1}/pred_GE.csv",
