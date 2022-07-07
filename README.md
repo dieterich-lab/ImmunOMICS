@@ -114,11 +114,11 @@ Make sure you install the [Miniconda Python3 distribution](https://docs.conda.io
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh
 ```
-For performance and compatibility reasons you should install `Mamba` via conda to install Snakemake. See [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for more details.
+For performance and compatibility reasons, you should install `Mamba` via conda to install Snakemake. See [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for more details.
 ```
 conda install -c conda-forge mamba
 ```
-Once you have installed Conda and Mamba, you can install the software dependecies via the following commands:
+Once you have installed Conda and Mamba, you can install the software dependencies via the following commands:
 
 ```bash
 # install environment using Conda
@@ -144,7 +144,7 @@ docker image tag immun2sev:latest aminale/immun2sev:firstpush
 docker image push aminale/immun2sev:firstpush
 ```
 
-1- A pre-compiled Docker image without snakemake pipeline is housed on the DockerHub 'aminale/test:firstpush'. You can download and use the Docker image and run using the cloned reposotory as follow:
+1- A pre-compiled Docker image without snakemake pipeline is housed on the DockerHub 'aminale/test:firstpush'. You can download and use the Docker image and run using the cloned repository as follow:
 
 ```bash
 # download the Docker image 
@@ -154,7 +154,7 @@ docker pull aminale/test:firstpush
 docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yml --printshellcmds"
 
 ```
-2- A pre-compiled all in one Docker image including snakemake pipeline is housed on the DockerHub 'aminale/immun2sev:firstpush'. You can download and use the Docker image as follow:
+2- A pre-compiled all-in-one Docker image, including snakemake pipeline, is housed on the DockerHub 'aminale/immun2sev:firstpush'. You can download and use the Docker image as follow:
 
 ```bash
 # download the Docker image 
@@ -167,7 +167,7 @@ docker run -it --rm --mount "type=bind,src=Host_directory,dst=Path_in_container"
 Reproducibility: Singularity
 ----------------------------
 
-A final option is to load the above Docker image using Singularity, designed for high-performance compute systems. To do so: 
+A final option is to load the above Docker image using Singularity, designed for high-performance computing systems. To do so: 
 
 1- Using singularity as an option for snakemake
 
@@ -180,7 +180,7 @@ conda install snakemake
 
 * add the --use-singularity flag when calling snakemake 
 * bind the path to your input data (e.g --singularity-args "-B /prj") to the command.
-Note that the docker image was already added as a DOCKER variable to the config file (config.yaml).
+Note that the docker image was already added as a DOCKER variable to the config file (config.yml).
 
 As an example, see below.
 ```bash
@@ -192,16 +192,6 @@ snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile --configfile ${S
 * install snakemake via conda (See [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for more details)
 
 ```bash
-conda activate base
-conda install snakemake
-```
-
-* add the --use-singularity flag when calling snakemake 
-* bind the path to your input data (e.g --singularity-args "-B /prj") to the command.
-Note that the docker image was already added as a DOCKER variable to the config file (config.yaml).
-
-As an example, see below.
-```bash
 singularity run -B /Host_directory aminale_immun2sev_firstpush-2022-07-07.sif "snakemake --cores all all --snakefile src/snakefile  --configfile /path_to_config/config.yml --directory /writable_directory"
 ```
 
@@ -209,7 +199,7 @@ Notes & Tips
 ------------
 
 - Seurat reference mapping requires high memory usage, so please provide enough resources according to your dataset size.
-- Please make sure to mount/bind all host reposotories you are using (for inputs and outputs) into your container and you are setting a writable directory for the --directory option in snakemake. 
+- Please make sure to mount/bind all host repositories you use (for inputs and outputs) into your container and set a writable directory for the --directory option in snakemake. 
 - To convert docker image to singularity on HPC, you can use docker images [docker2singularity](https://github.com/singularityhub/docker2singularity) 
 
 ```bash
