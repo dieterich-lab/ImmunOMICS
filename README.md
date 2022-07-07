@@ -137,21 +137,32 @@ An alternative option is to use a Docker image. One can easily generate a Docker
 ```bash
 # build the Docker image using the Dockerfile
 cd ${SNK_REPO}
-docker build -t sevpred .
+docker build -t immun2sev .
+
+# push to DockerHub
+docker image tag immun2sev:latest aminale/immun2sev:firstpush
+docker image push aminale/immun2sev:firstpush
 ```
 
-A pre-compiled Docker image is housed on the DockerHub 'aminale/test:firstpush'. You can download and use the Docker image:
+A pre-compiled Docker image without snakemake pipeline is housed on the DockerHub 'aminale/test:firstpush'. You can download and use the Docker image and run using the cloned reposotory as follow:
 
 ```bash
 # download the Docker image 
 docker pull aminale/test:firstpush
 
 # run the Snakemake pipeline through the container
-#docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yml --printshellcmds"
+docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yml --printshellcmds"
 
-docker run -it --rm --mount "type=bind,src=$(pwd),dst=/prj/NUM_CODEX_PLUS/Amina/CellSubmission" immun2sev "snakemake --cores all all --snakefile src/snakefile  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/src/config.yml"
 ```
+A pre-compiled Docker image including snakemake pipeline is housed on the DockerHub 'aminale/immun2sev:firstpush'. You can download and use the Docker image as follow:
 
+```bash
+# download the Docker image 
+docker pull aminale/immun2sev:firstpush
+
+# run the Snakemake pipeline through the container
+docker run -it --rm --mount "type=bind,src=Host_directory,dst=Path_in_container" immun2sev "snakemake --cores all all --snakefile src/snakefile  --configfile /Path_to_config/config.yml"
+```
 
 Reproducibility: Singularity
 ----------------------------
@@ -182,6 +193,7 @@ Notes & Tips
 ------------
 
 - Seurat reference mapping requires high memory usage, so please provide enough resources according to your dataset size.
+- Please make sure to mount/bind all host reposotories you are using into your container and you are setting a writable directory for the --directory option in snakemake. 
 - To convert docker image to singularity on HPC, you can use docker images [docker2singularity](https://github.com/singularityhub/docker2singularity) 
 
 ```bash
