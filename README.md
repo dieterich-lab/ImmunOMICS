@@ -7,7 +7,12 @@ Snakemake pipeline for predicting severity in COVID-19.
 Overview
 --------
 
-The workflow is. All code is housed within scripts. In addition, this directory houses the data subdirectory, which contains data for minimal examples.
+The workflow is. 
+
+<p align="center">
+  <img src="immun2sev.png" width="300">
+</p>
+All code is housed within scripts. In addition, this directory houses the data subdirectory, which contains data for minimal examples.
 
 Quick Setup
 -----------
