@@ -9,9 +9,7 @@ Overview
 
 The workflow is. 
 
-<p align="center">
-  <img src="immun2sev.png" width="1000">
-</p>
+
 All code is housed within scripts. In addition, this directory houses the data subdirectory, which contains data for minimal examples.
 
 Quick Setup
