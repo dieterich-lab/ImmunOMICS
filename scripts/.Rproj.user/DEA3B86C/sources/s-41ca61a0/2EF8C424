@@ -1,0 +1,28 @@
+{
+    "id": "2EF8C424",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1646903792857.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "id": "a74f5d4a96e24868b34d2f84ea3c2e13",
+        "name": "Idents(cohort2)",
+        "title": "Idents(cohort2)",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 141300438308749312,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1646903792857,
+    "read_only": false,
+    "read_only_alternatives": []
+}

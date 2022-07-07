@@ -1,0 +1,4 @@
+"0","top20 <- cluster.markers.wilcox_res.0.4 %>% group_by(cluster) %>% top_n(n = 20, wt = abs(avg_log2FC))"
+"0","top50 <- cluster.markers.wilcox_res.0.4 %>% group_by(cluster) %>% top_n(n = 50, wt = abs(avg_log2FC))"
+"0","top100 <- cluster.markers.wilcox_res.0.4 %>% group_by(cluster) %>% top_n(n = 100, wt = abs(avg_log2FC))"
+"0",""

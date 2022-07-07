@@ -1,0 +1,27 @@
+{
+    "id": "9460E314",
+    "path": "/prj/NUM_CODEX_PLUS/Amina/Prediction_scOmics/scripts/data_exploration_cohort2.Rmd",
+    "project_path": "data_exploration_cohort2.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": true,
+    "created": 1646644680096.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "131,21",
+        "scrollLine": "127",
+        "last_setup_crc32": "41ca61a0af54586"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1644922649,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1647252047613,
+    "read_only": false,
+    "read_only_alternatives": []
+}
