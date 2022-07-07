@@ -144,7 +144,7 @@ docker image tag immun2sev:latest aminale/immun2sev:firstpush
 docker image push aminale/immun2sev:firstpush
 ```
 
-A pre-compiled Docker image without snakemake pipeline is housed on the DockerHub 'aminale/test:firstpush'. You can download and use the Docker image and run using the cloned reposotory as follow:
+1- A pre-compiled Docker image without snakemake pipeline is housed on the DockerHub 'aminale/test:firstpush'. You can download and use the Docker image and run using the cloned reposotory as follow:
 
 ```bash
 # download the Docker image 
@@ -154,7 +154,7 @@ docker pull aminale/test:firstpush
 docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yml --printshellcmds"
 
 ```
-A pre-compiled all in one Docker image including snakemake pipeline is housed on the DockerHub 'aminale/immun2sev:firstpush'. You can download and use the Docker image as follow:
+2- A pre-compiled all in one Docker image including snakemake pipeline is housed on the DockerHub 'aminale/immun2sev:firstpush'. You can download and use the Docker image as follow:
 
 ```bash
 # download the Docker image 
@@ -186,11 +186,8 @@ As an example, see below.
 ```bash
 snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile --configfile ${SNK_REPO}/src/config.yml --use-singularity --singularity-prefix ${SNK_REPO}/.snakemake/singularity --singularity-args "-B /prj" --printshellcmds
 
-or 
-
-singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission Prediction_scOmics/singularity/immun2sev_latest-2022-07-07-938495849ed1.sif "snakemake --cores all all --snakefile src/snakefile  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/src/config.yml --directory /home/alemsara"
 ```
-1- Using all in one image
+2- Using all in one image
 
 * install snakemake via conda (See [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for more details)
 
@@ -205,7 +202,7 @@ Note that the docker image was already added as a DOCKER variable to the config 
 
 As an example, see below.
 ```bash
-singularity run -B /Host_directory immun2sev_latest-2022-07-07-938495849ed1.sif "snakemake --cores all all --snakefile src/snakefile  --configfile /path_to_config/config.yml --directory /writable_directory"
+singularity run -B /Host_directory aminale_immun2sev_firstpush-2022-07-07.sif "snakemake --cores all all --snakefile src/snakefile  --configfile /path_to_config/config.yml --directory /writable_directory"
 ```
 
 Notes & Tips
