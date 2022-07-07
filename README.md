@@ -147,7 +147,9 @@ A pre-compiled Docker image is housed on the DockerHub 'aminale/test:firstpush'.
 docker pull aminale/test:firstpush
 
 # run the Snakemake pipeline through the container
-docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yaml --printshellcmds"
+#docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yml --printshellcmds"
+
+docker run -it --rm --mount "type=bind,src=$(pwd),dst=/prj/NUM_CODEX_PLUS/Amina/CellSubmission" immun2sev "snakemake --cores all all --snakefile src/snakefile  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/src/config.yml"
 ```
 
 
@@ -168,12 +170,24 @@ Note that the docker image was already added as a DOCKER variable to the config 
 
 As an example, see below.
 ```bash
-snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile --configfile ${SNK_REPO}/src/config.yaml --use-singularity --singularity-prefix ${SNK_REPO}/.snakemake/singularity --singularity-args "-B /prj" --printshellcmds
+snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile --configfile ${SNK_REPO}/src/config.yml --use-singularity --singularity-prefix ${SNK_REPO}/.snakemake/singularity --singularity-args "-B /prj" --printshellcmds
+
+or 
+
+singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission Prediction_scOmics/singularity/immun2sev_latest-2022-07-07-938495849ed1.sif "snakemake --cores all all --snakefile src/snakefile  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/src/config.yml --directory /home/alemsara"
 ```
 
 
-Resource Requirement
----------------------
+Notes & Tips
+------------
 
-Seurat reference mapping requires high memory usage, so please provide enough resources according to your dataset size.
+- Seurat reference mapping requires high memory usage, so please provide enough resources according to your dataset size.
+- To convert docker image to singularity on HPC, you can use docker images [docker2singularity](https://github.com/singularityhub/docker2singularity) 
+
+```bash
+docker pull docker2singularity
+
+#conversion
+docker run -v /var/run/docker.sock:/var/run/docker.sock -v /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity:/output -t --rm quay.io/singularity/docker2singularity test1:latest
+```
 
