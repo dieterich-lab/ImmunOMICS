@@ -157,7 +157,9 @@ docker build -t immun2sev .
 docker pull aminale/test:firstpush
 
 # run the Snakemake pipeline through the container
-docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR --configfile /SNK_REPO/src/config.yml --printshellcmds"
+docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush \
+        "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR \
+        --configfile /SNK_REPO/src/config.yml --printshellcmds"
 
 ```
 2- A pre-compiled all-in-one Docker image, including snakemake pipeline, is housed on the DockerHub 'aminale/immun2sev:firstpush'. You can download and use the Docker image as follow:
@@ -167,7 +169,8 @@ docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale
 docker pull aminale/immun2sev:firstpush
 
 # run the Snakemake pipeline through the container
-docker run -it --rm --mount "type=bind,src=Host_directory,dst=Path_in_container" immun2sev "snakemake --cores all all --snakefile src/snakefile  --configfile /Path_to_config/config.yml"
+docker run -it --rm --mount "type=bind,src=Host_directory,dst=Path_in_container" immun2sev \
+      "snakemake --cores all all --snakefile src/snakefile  --configfile /Path_to_config/config.yml"
 ```
 
 Reproducibility: Singularity
@@ -190,13 +193,18 @@ Note that the docker image was already added as a DOCKER variable to the config 
 
 As an example, see below.
 ```bash
-snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile --configfile ${SNK_REPO}/src/config.yml --use-singularity --singularity-prefix ${SNK_REPO}/.snakemake/singularity --singularity-args "-B /prj" --printshellcmds
+snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile \
+          --configfile ${SNK_REPO}/src/config.yml --use-singularity \
+          --singularity-prefix ${SNK_REPO}/.snakemake/singularity \
+          --singularity-args "-B /prj" --printshellcmds
 
 ```
 2- Using all-in-one image
 
 ```bash
-singularity run -B /Host_directory aminale_immun2sev_firstpush-2022-07-07.sif "snakemake --cores all all --snakefile src/snakefile  --configfile /path_to_config/config.yml --directory /writable_directory"
+singularity run -B /Host_directory aminale_immun2sev_firstpush-2022-07-07.sif \
+                  "snakemake --cores all all --snakefile src/snakefile  \
+                  --configfile /path_to_config/config.yml --directory /writable_directory"
 ```
 
 Notes & Tips
