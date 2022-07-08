@@ -64,7 +64,8 @@ The input datasets should contain the following metadata columns:
 * "batch": the batch name of your data
 * "who_score": if availbale else =condition (it serves as factor for the traning/validation split)
 
-Here is the config file for the testing example.
+Here is the config file for the testing example. Data can be found in DOI:10.5281/zenodo.6811191.
+
 
 ```
 # INPUT & OUTPUT PATHS
@@ -201,11 +202,13 @@ snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile \
 ```
 2- Using all-in-one image
 
-```bash
+
+```bash 
 singularity run -B /Host_directory aminale_immun2sev_firstpush-2022-07-07.sif \
                   "snakemake --cores all all --snakefile src/snakefile  \
                   --configfile /path_to_config/config.yml --directory /writable_directory"
 ```
+Singularity image aminale_immun2sev_firstpush-2022-07-07.sif can be found in DOI:10.5281/zenodo.6811191.
 
 Notes & Tips
 ------------
