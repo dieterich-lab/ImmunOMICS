@@ -204,7 +204,7 @@ snakemake --cores all all --snakefile ${SNK_REPO}/scr/snakefile \
 
 
 ```bash 
-singularity run -B /Host_directory aminale_immun2sev_firstpush-2022-07-07.sif \
+singularity run -B /Host_directory aminale_immun2sev_latest.sif \
                   "snakemake --cores all all --snakefile src/snakefile  \
                   --configfile /path_to_config/config.yml --directory /writable_directory"
 ```
