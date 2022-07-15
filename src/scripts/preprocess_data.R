@@ -1,6 +1,8 @@
 # library(Seurat)
 library(SeuratDisk)
 library(dplyr)
+set.seed(0)
+
 
 inp = snakemake@input[[1]]
 fc_file = snakemake@input[[2]]

@@ -1,6 +1,7 @@
 library(Seurat)
 library(SeuratDisk)
 library(future)
+set.seed(0)
 future.seed = TRUE
 plan("multicore", workers = 4)
 options(future.globals.maxSize = 8000 * 1024 ^ 2)

@@ -10,45 +10,21 @@ import tensorflow as tf
 from keras.callbacks import ModelCheckpoint
 from sklearn.utils import resample
 from keras.models import load_model
+# from numba import njit, prange
 # from keras import backend as K
 # print(tf.config.list_physical_devices("GPU"))
-
-def reset_random_seeds():
-   os.environ['PYTHONHASHSEED']=str(1)
-   tf.random.set_seed(0)
-   np.random.seed(1234)
-
-
 x_cell=pd.read_csv (snakemake.input[0],index_col=0)
 x_exp=pd.read_csv (snakemake.input[1],index_col=0)
-x_exp=x_exp.loc[x_exp['condition'].isin(['Mild','Severe']),:]
-x_cell=x_cell.loc[x_cell['condition'].isin(['Mild','Severe']),:]
-x_cell=x_cell.drop(['Doublet','Eryth','NK_CD56bright'],axis=1)
-x_exp=x_exp.drop(['MTRNR2L12','MTRNR2L8'],axis=1)
-
 train_set_f=snakemake.output[0]
 val_set_f=snakemake.output[1]
 model_j_f=snakemake.output[2]
 model_e_f=snakemake.output[3]
 model_c_f=snakemake.output[4]
-
 path=snakemake.params[0]
-x_cell=x_cell.loc[x_exp.index,:]
-
-label= x_cell.iloc[:,-1].values
-who=x_exp.iloc[:,-1].values
-x_cell= x_cell.drop('condition',axis=1)
-x_exp= x_exp.drop('condition',axis=1)
-x_exp= x_exp.drop('who_score',axis=1)
-
-genes = x_exp.columns
-
-
-le = LabelEncoder()
-Ytrain = le.fit_transform(label)
-
-x_exp = minmax_scale(x_exp, axis = 0)
-x_cell= x_cell.div(x_cell.sum(axis=1), axis=0)
+def reset_random_seeds():
+   os.environ['PYTHONHASHSEED']=str(1)
+   tf.random.set_seed(0)
+   np.random.seed(1234)
 
 
 def training(model, trainDataOne,y, valid_set):
@@ -156,58 +132,115 @@ def provide_stratified_bootstap_sample_indices(bs_sample,percent):
         bs_index_list_stratified.extend(random.sample(data_index_stratum , k = kk))
     return bs_index_list_stratified
 
+# @njit(parallel=True)
+def train_loop(sets,dim_exp,dim_cells ):
+    n_iterations = 30
+    train_set = list()
+    val_set = list()
+    model_j={}
+    model_e={}
+    model_c={}
+    state=[]
+    random.seed(1234)
+    seeds = random.sample(range(0, 1000), n_iterations)
+    for i in range(n_iterations):
+        random.seed(seeds[i])
+        print(seeds[i])
+        print(i)
+        # prepare train and test sets
+        #train = resample(sets, n_samples=n_size)
+#         state.append(random.getstate())
+        bs_index_list_stratified= provide_stratified_bootstap_sample_indices(sets,0.8)
+        train= sets[bs_index_list_stratified , :]
+        test = np.array([x for x in sets if x.tolist() not in train.tolist()])
+        # fit model
+        model = build_classifier2(train[:,:dim_exp],train[:,dim_exp:(dim_exp+dim_cells)])
+        model, history= training(model, [train[:,:dim_exp],train[:,dim_exp:(dim_exp+dim_cells)]]
+                                 , train[:,-1],([test[:,:dim_exp],test[:,dim_exp:(dim_exp+dim_cells)]],test[:,-1]))
+        model_j[i]=load_model(model_j_f+'.h5')
+        # evaluate model
+        model = build_classifier(train[:,:dim_exp])
+        model, history= training(model, train[:,:dim_exp]
+                                 , train[:,-1],(test[:,:dim_exp],test[:,-1]))
+        model_e[i]=load_model(model_j_f+'.h5')
 
-sets = np.concatenate((x_exp, x_cell), axis=1)
-sets = np.column_stack((sets, Ytrain))
-dim_exp = x_exp.shape[1]
-dim_cells = x_cell.shape[1]
-n_iterations = 30
-train_set = list()
-val_set = list()
-model_j={}
-model_e={}
-model_c={}
-random.seed(42)
-seeds = random.sample(range(0, 500), 30)
-for i in range(n_iterations):
-    random.seed(seeds[i])
-    print(i)
-    # prepare train and test sets
-    all_sets= x_exp,
-    #train = resample(sets, n_samples=n_size)
-    bs_index_list_stratified= provide_stratified_bootstap_sample_indices(sets,0.8)
-    train= sets[bs_index_list_stratified , :]
-    test = np.array([x for x in sets if x.tolist() not in train.tolist()])
-    # fit model
-    model = build_classifier2(train[:,:dim_exp],train[:,dim_exp:(dim_exp+dim_cells)])
-    model, history= training(model, [train[:,:dim_exp],train[:,dim_exp:(dim_exp+dim_cells)]]
-                             , train[:,-1],([test[:,:dim_exp],test[:,dim_exp:(dim_exp+dim_cells)]],test[:,-1]))
-    model_j[i]=load_model(model_j_f+'.h5')
-    # evaluate model
-    model = build_classifier(train[:,:dim_exp])
-    model, history= training(model, train[:,:dim_exp]
-                             , train[:,-1],(test[:,:dim_exp],test[:,-1]))
-    model_e[i]=load_model(model_j_f+'.h5')
- 
-    # evaluate model
-    model = build_classifier(train[:,dim_exp:(dim_exp+dim_cells)])
-    model, history= training(model, train[:,dim_exp:(dim_exp+dim_cells)]
-                             , train[:,-1],(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1]))
-    model_c[i]=load_model(model_j_f+'.h5')
+        # evaluate model
+        model = build_classifier(train[:,dim_exp:(dim_exp+dim_cells)])
+        model, history= training(model, train[:,dim_exp:(dim_exp+dim_cells)]
+                                 , train[:,-1],(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1]))
+        model_c[i]=load_model(model_j_f+'.h5')
+
+        # evaluate model 
+        val_set.append(test)    
+        train_set.append(train)        
+    return model_j, model_e, model_c, val_set, train_set,state
+
+if __name__ == "__main__":
+
+    x_exp=x_exp.loc[x_exp['condition'].isin(['Mild','Severe']),:]
+    x_cell=x_cell.loc[x_cell['condition'].isin(['Mild','Severe']),:]
+    x_cell=x_cell.drop(['Doublet','Eryth','NK_CD56bright'],axis=1)
+                    #,'Treg', "B intermediate",'gdt', 'CD4 CTL', 'CD4 TEM']
+    x_cell=x_cell.loc[x_exp.index,:]
+    label= x_cell.iloc[:,-1].values
+    who=x_exp.iloc[:,-1].values
+    x_cell= x_cell.drop('condition',axis=1)
+    x_exp= x_exp.drop('condition',axis=1)
+    x_exp= x_exp.drop('who_score',axis=1)
     
-    # evaluate model 
-    val_set.append(test)    
-    train_set.append(train)        
+#     x_cell= x_cell[['B naive','NK','CD8 TEM','CD4 Naive','Platelet','cDC2','CD8 TCM', 'CD16 Mono','pDC',"CD4 Proliferating",'MAIT', 'CD4 TCM',"B memory",  "CD14 Mono","CD4 CTL"]]
+    #, 'Treg', "B intermediate",'gdT',"Plasmablast", 'NK Proliferating']]
 
+    genes = x_exp.columns
+    le = LabelEncoder()
+    Ytrain = le.fit_transform(label)
+    x_exp = minmax_scale(x_exp, axis = 0)
+    x_cell= x_cell.div(x_cell.sum(axis=1), axis=0)    
+    sets = np.concatenate((x_exp, x_cell), axis=1)
+    sets = np.column_stack((sets, Ytrain))
+    dim_exp = x_exp.shape[1]
+    dim_cells = x_cell.shape[1]
+    model_j, model_e, model_c, val_set, train_set,state=train_loop(sets,dim_exp,dim_cells )
+#     random.seed(0)
+#     seeds = random.sample(range(0, 500), 30)
+#     for i in range(n_iterations):
+#         random.seed(seeds[i])
+#         print(i)
+#         # prepare train and test sets
+#         #train = resample(sets, n_samples=n_size)
+#         bs_index_list_stratified= provide_stratified_bootstap_sample_indices(sets,0.8)
+#         train= sets[bs_index_list_stratified , :]
+#         test = np.array([x for x in sets if x.tolist() not in train.tolist()])
+#         # fit model
+#         model = build_classifier2(train[:,:dim_exp],train[:,dim_exp:(dim_exp+dim_cells)])
+#         model, history= training(model, [train[:,:dim_exp],train[:,dim_exp:(dim_exp+dim_cells)]]
+#                                  , train[:,-1],([test[:,:dim_exp],test[:,dim_exp:(dim_exp+dim_cells)]],test[:,-1]))
+#         model_j[i]=load_model(model_j_f+'.h5')
+#         # evaluate model
+#         model = build_classifier(train[:,:dim_exp])
+#         model, history= training(model, train[:,:dim_exp]
+#                                  , train[:,-1],(test[:,:dim_exp],test[:,-1]))
+#         model_e[i]=load_model(model_j_f+'.h5')
 
-with open(val_set_f, 'wb') as b:
-    pickle.dump(val_set,b)
-with open(train_set_f, 'wb') as b:
-    pickle.dump(train_set,b)
-with open(model_j_f, 'wb') as b:
-    pickle.dump(model_j,b)
-with open(model_e_f, 'wb') as b:
-    pickle.dump(model_e,b)
-with open(model_c_f, 'wb') as b:
-    pickle.dump(model_c,b)
-    
+#         # evaluate model
+#         model = build_classifier(train[:,dim_exp:(dim_exp+dim_cells)])
+#         model, history= training(model, train[:,dim_exp:(dim_exp+dim_cells)]
+#                                  , train[:,-1],(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1]))
+#         model_c[i]=load_model(model_j_f+'.h5')
+
+#         # evaluate model 
+#         val_set.append(test)    
+#         train_set.append(train)        
+
+    with open(val_set_f, 'wb') as b:
+        pickle.dump(val_set,b)
+    with open(train_set_f, 'wb') as b:
+        pickle.dump(train_set,b)
+    with open(model_j_f, 'wb') as b:
+        pickle.dump(model_j,b)
+    with open(model_e_f, 'wb') as b:
+        pickle.dump(model_e,b)
+    with open(model_c_f, 'wb') as b:
+        pickle.dump(model_c,b)
+#     with open(model_c_f+'state.pkl', 'wb') as b:
+#         pickle.dump(state,b)

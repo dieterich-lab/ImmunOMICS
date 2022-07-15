@@ -104,6 +104,8 @@ rule predict_val:
        model_j=out+"merged_training/model_CC_GE.pkl",
        model_e=out+"merged_training/model_GE.pkl",
        model_c=out+"merged_training/model_CC.pkl",  
+       training=out+"merged_training/train_set.pkl",
+       
     output:
        pred_j=out+"merged_training/pred_CC_GE.csv",
        pred_e=out+"merged_training/pred_GE.csv",
@@ -111,7 +113,9 @@ rule predict_val:
        fig=out+"merged_training/fig_metrics.pdf",           
        pred_j_=out+"merged_training/pred_CC_GE.txt",
        pred_e_=out+"merged_training/pred_GE.txt",
-       pred_c_=out+"merged_training/pred_CC.txt",       
+       pred_c_=out+"merged_training/pred_CC.txt",   
+       shap=out+"merged_training/fig_shap.pdf"       
+       
     singularity:
         config['DOCKER']
     params: config['nb_topGenes'] 
@@ -125,8 +129,8 @@ rule predict:
        model_j=out+"merged_training/model_CC_GE.pkl",
        model_e=out+"merged_training/model_GE.pkl",
        model_c=out+"merged_training/model_CC.pkl",  
-       cc_ref = out+"merged_training/annotation.csv",
-       ge_ref = out+"merged_training/selected_ge.csv",
+       #cc_ref = out+"merged_training/annotation.csv",
+       #ge_ref = out+"merged_training/selected_ge.csv",
        #pred_v=out+"merged_training/pred_CC_GE.csv"      
        training=out+"merged_training/train_set.pkl",
        

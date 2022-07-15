@@ -28,40 +28,8 @@ out_fig=snakemake.output[3]
 out_j_txt=snakemake.output[4]
 out_e_txt=snakemake.output[5]
 out_c_txt=snakemake.output[6]
+out_shap=snakemake.output[7]
 
-
-with open(model_j_f, 'rb') as b:
-    model_j=pickle.load(b)
-with open(model_j_e, 'rb') as b:
-    model_e=pickle.load(b)
-with open(model_j_c, 'rb') as b:
-    model_c=pickle.load(b)
-
-
-y_score1 = pd.DataFrame([])
-y_score2 = pd.DataFrame([])
-y_score3 = pd.DataFrame([])
-
-i=0
-for model in model_j.values():
-    x_cell=test[i][:,dim_exp:(dim_exp+dim_cells)]
-    x_exp=test[i][:,:dim_exp]
-    y_score1['sampling'+str(i)]=model.predict([x_exp,x_cell]).flatten()
-    i=i+1
-i=0    
-for model in model_e.values():
-    x_exp=test[i][:,:dim_exp]
-    y_score2['sampling'+str(i)]=model.predict(x_exp).flatten()
-    i=i+1
-i=0    
-for model in model_c.values():
-    x_cell=test[i][:,dim_exp:(dim_exp+dim_cells)]
-    y_score3['sampling'+str(i)]=model.predict(x_cell).flatten()
-    i=i+1
-    
-y_score1.to_csv(out1)
-y_score2.to_csv(out2)
-y_score3.to_csv(out3)
 
 def confidence_interval( values):
         mean = np.mean(values)
@@ -84,18 +52,16 @@ def eval_box(metrics,tit):
         tp_vec.append(tp-val)
         x_vec.append(d)
     
-    with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
+    with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300, "font.size" : 16}):
 #         plt.errorbar(x_vec, val_vec, yerr=(bt_vec, tp_vec), linestyle="None",  fmt="ob",  capsize=3,  ecolor="k")
         plt.errorbar(x_vec, val_vec, yerr=(bt_vec, tp_vec),fmt='o', 
-            mfc = 'blue',
-            mec = 'blue',
-            ms = 4,
-            mew = 3, 
+            capsize=5,
             ecolor='k', 
             lw=3,
             ls = ':',
             color='blue')
         plt.title(tit)
+        plt.ylim(0.4, 1.05)
         plt.plot([], c='k', label='CI 95%')
         plt.plot([], c='blue', label='mean')
         plt.legend(loc="lower right")
@@ -115,48 +81,154 @@ def compute_metrics(y):
             metrics['auprc'].append(skm.average_precision_score(Ytest,y[l]))
             i=i+1
     return metrics
-res_j=compute_metrics(y_score1)
-res_e=compute_metrics(y_score2)
-res_c=compute_metrics(y_score3)
+# @njit(parallel=True)
+def shap_loop(model_j, training_set,dim_exp, dim_cells,test):
+    model_len=len(model_j)
+    for i in range(model_len):
+        model_joint=model_j[i]
+        x_ref_exp=training_set[i][:,:dim_exp]
+        x_ref_cell=training_set[i][:,dim_exp:(dim_exp+dim_cells)]
+        x_cell=test[i][:,dim_exp:(dim_exp+dim_cells)]
+        x_exp=test[i][:,:dim_exp]
 
-#compute mean and CI 
-all_met= pd.DataFrame([])
-for d in res_j:
-        val, bt, tp= confidence_interval(res_j[d])
-        all_met[d]=[val,bt,tp]
-        
-all_met.index=['mean','lower CI','upper CI']
-all_met.transpose().to_csv(out_j_txt)
-for d in res_e:
-        val, bt, tp= confidence_interval(res_e[d])
-        all_met[d]=[val,bt,tp]
-all_met.index=['mean','lower CI','upper CI']
-all_met.transpose().to_csv(out_e_txt)
+        explainer = shap.DeepExplainer(model_joint, [x_ref_exp,x_ref_cell])
+        shap_values = explainer.shap_values([np.array(x_exp),np.array(x_cell)])
+        if model_joint ==model_j[0]:
+            shap_values_all_exp=shap_values[0][0]
+            shap_values_all_cell=shap_values[0][1]                
+        else:
+            shap_values_all_exp=shap_values_all_exp+shap_values[0][0]
+            shap_values_all_cell=shap_values_all_cell+shap_values[0][1]    
+    return shap_values_all_exp,shap_values_all_cell
 
-for d in res_c:
-        val, bt, tp= confidence_interval(res_c[d])
-        all_met[d]=[val,bt,tp]
+if __name__ == "__main__":
 
-all_met.index=['mean','lower CI','upper CI']
-all_met.transpose().to_csv(out_c_txt)
+    with open(model_j_f, 'rb') as b:
+        model_j=pickle.load(b)
+    with open(model_j_e, 'rb') as b:
+        model_e=pickle.load(b)
+    with open(model_j_c, 'rb') as b:
+        model_c=pickle.load(b)
 
 
-#plot figures
-fig1=eval_box({'CC':res_c['auc'],'GE':res_e['auc'],'CC&GE':res_j['auc']},'AUC')
-fig2=eval_box({'CC':res_c['auprc'],'GE':res_e['auprc'],'CC&GE':res_j['auprc']},'AUPRC')
-fig3=eval_box({'CC':res_c['acc'],'GE':res_e['acc'],'CC&GE':res_j['acc']},'ACCURACY')
-fig4=eval_box({'CC':res_c['prc'],'GE':res_e['prc'],'CC&GE':res_j['prc']},'PRECISION')
-fig5=eval_box({'CC':res_c['rec'],'GE':res_e['rec'],'CC&GE':res_j['rec']},'RECALL')
-fig6=eval_box({'CC':res_c['f1'],'GE':res_e['f1'],'CC&GE':res_j['f1']},'F1-SCORE')
-fig7=eval_box({'Precision':res_j['prc'],'Recall':res_j['rec'],'F1-score':res_j['f1']},'Sens&Spec_CC&GE')
+    y_score1 = pd.DataFrame([])
+    y_score2 = pd.DataFrame([])
+    y_score3 = pd.DataFrame([])
 
-pp = PdfPages(out_fig)
-pp.savefig(fig1)
-pp.savefig(fig2)
-pp.savefig(fig3)
-pp.savefig(fig4)
-pp.savefig(fig5)
-pp.savefig(fig6)
-pp.savefig(fig7)
-pp.close()
+    i=0
+    for model in model_j.values():
+        x_cell=test[i][:,dim_exp:(dim_exp+dim_cells)]
+        x_exp=test[i][:,:dim_exp]
+        y_score1['sampling'+str(i)]=model.predict([x_exp,x_cell]).flatten()
+        i=i+1
+    i=0    
+    for model in model_e.values():
+        x_exp=test[i][:,:dim_exp]
+        y_score2['sampling'+str(i)]=model.predict(x_exp).flatten()
+        i=i+1
+    i=0    
+    for model in model_c.values():
+        x_cell=test[i][:,dim_exp:(dim_exp+dim_cells)]
+        y_score3['sampling'+str(i)]=model.predict(x_cell).flatten()
+        i=i+1
+
+    y_score1.to_csv(out1)
+    y_score2.to_csv(out2)
+    y_score3.to_csv(out3)
+    res_j=compute_metrics(y_score1)
+    res_e=compute_metrics(y_score2)
+    res_c=compute_metrics(y_score3)
+
+    #compute mean and CI 
+    all_met= pd.DataFrame([])
+    for d in res_j:
+            val, bt, tp= confidence_interval(res_j[d])
+            all_met[d]=[val,bt,tp]
+
+    all_met.index=['mean','lower CI','upper CI']
+    all_met.transpose().to_csv(out_j_txt)
+    for d in res_e:
+            val, bt, tp= confidence_interval(res_e[d])
+            all_met[d]=[val,bt,tp]
+    all_met.index=['mean','lower CI','upper CI']
+    all_met.transpose().to_csv(out_e_txt)
+
+    for d in res_c:
+            val, bt, tp= confidence_interval(res_c[d])
+            all_met[d]=[val,bt,tp]
+
+    all_met.index=['mean','lower CI','upper CI']
+    all_met.transpose().to_csv(out_c_txt)
+
+
+    #plot figures
+    fig1=eval_box({'CC':res_c['auc'],'GE':res_e['auc'],'CC&GE':res_j['auc']},'AUC')
+    fig2=eval_box({'CC':res_c['auprc'],'GE':res_e['auprc'],'CC&GE':res_j['auprc']},'AUPRC')
+    fig3=eval_box({'CC':res_c['acc'],'GE':res_e['acc'],'CC&GE':res_j['acc']},'ACCURACY')
+    fig4=eval_box({'CC':res_c['prc'],'GE':res_e['prc'],'CC&GE':res_j['prc']},'PRECISION')
+    fig5=eval_box({'CC':res_c['rec'],'GE':res_e['rec'],'CC&GE':res_j['rec']},'RECALL')
+    fig6=eval_box({'CC':res_c['f1'],'GE':res_e['f1'],'CC&GE':res_j['f1']},'F1-SCORE')
+    fig7=eval_box({'Precision':res_j['prc'],'Recall':res_j['rec'],'F1-score':res_j['f1']},'Sens&Spec_CC&GE')
+
+    pp = PdfPages(out_fig)
+    pp.savefig(fig1, bbox_inches='tight')
+    pp.savefig(fig2, bbox_inches='tight')
+    pp.savefig(fig3, bbox_inches='tight')
+    pp.savefig(fig4, bbox_inches='tight')
+    pp.savefig(fig5, bbox_inches='tight')
+    pp.savefig(fig6, bbox_inches='tight')
+    pp.savefig(fig7, bbox_inches='tight')
+    pp.close()
+
+    genes = ["CAMP","DEFA3","HBA2","HBB","IGLC2","IGLC3","LCN2","LTF","MTRNR2L12","MTRNR2L8","PPBP","RETN","S100A12","S100A8","S100A9"]
+    cells = ["ASDC","B intermediate","B memory","B naive","CD14 Mono","CD16 Mono","CD4 CTL","CD4 Naive","CD4 Proliferating","CD4 TCM","CD4 TEM","CD8 Naive","CD8 Proliferating","CD8 TCM","CD8 TEM","cDC1","cDC2","dnT","gdT","HSPC","ILC","MAIT","NK","NK Proliferating","NK-CD56bright","pDC","Plasmablast","Platelet","Treg"]
+
+#     cells= ['B naive','NK','CD8 TEM','CD4 Naive','Platelet','cDC2','CD8 TCM', 'CD16 Mono','pDC',"CD4 Proliferating",'MAIT', 'CD4 TCM',"B memory",  "CD14 Mono","CD4 CTL", 'Treg', "B intermediate",'gdT',"Plasmablast", 'NK Proliferating']
+    
+    dim_exp = x_exp.shape[1]
+    dim_cells = x_cell.shape[1]
+
+    with open(snakemake.input[4], 'rb') as b:
+        training_set=pickle.load(b)
+    shap_values_all_exp,shap_values_all_cell=shap_loop(list(model_j.values()), training_set,dim_exp, dim_cells,test)
+#     i=0
+#     for model_joint in model_j.values():
+#         x_ref_exp=training_set[i][:,:dim_exp]
+#         x_ref_cell=training_set[i][:,dim_exp:(dim_exp+dim_cells)]
+
+#         i=i+1
+#         explainer = shap.DeepExplainer(model_joint, [x_ref_exp,x_ref_cell])
+#         shap_values = explainer.shap_values([np.array(x_exp),np.array(x_cell)])
+#         if model_joint ==model_j[0]:
+#             shap_values_all_exp=shap_values[0][0]
+#             shap_values_all_cell=shap_values[0][1]                
+#         else:
+#             shap_values_all_exp=shap_values_all_exp+shap_values[0][0]
+#             shap_values_all_cell=shap_values_all_cell+shap_values[0][1]    
+    nb=len(model_j)
+    f1 = plt.figure(figsize=(4, 3))
+    with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
+        shap.summary_plot(shap_values_all_exp/nb, plot_type= 'violin',features=np.array(x_exp)
+                          , feature_names =genes,color_bar_label='Feature value',show=False)
+    f2 = plt.figure()
+
+    with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
+        shap.summary_plot(shap_values_all_exp/nb, plot_type= 'bar',features=np.array(x_exp)
+                          , feature_names =genes,color_bar_label='Feature value',show=False)
+    f3 = plt.figure()
+
+    with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
+        shap.summary_plot(shap_values_all_cell/nb, plot_type= 'violin',features=x_cell
+                          , feature_names =cells,color_bar_label='Feature value',show=False, max_display=15)
+    f4 = plt.figure()
+    with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
+        shap.summary_plot(shap_values_all_cell/nb, plot_type= 'bar',features=np.array(x_cell)
+                          , feature_names =cells,color_bar_label='Feature value',show=False, max_display=15)
+
+    pp = PdfPages(out_shap)
+    pp.savefig(f1, bbox_inches='tight')
+    pp.savefig(f2, bbox_inches='tight')
+    pp.savefig(f3, bbox_inches='tight')
+    pp.savefig(f4, bbox_inches='tight')
+    pp.close()
 

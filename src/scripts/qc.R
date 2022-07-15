@@ -1,5 +1,6 @@
 library(Seurat)
 library(SeuratDisk)
+set.seed(0)
 
 cohort = snakemake@input[[1]]
 out = snakemake@output[[1]]

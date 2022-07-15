@@ -1,5 +1,8 @@
 library(Seurat)
 library(SeuratDisk)
+set.seed(1234)
+
+
 cohort_training = snakemake@input[[1]]
 out1 = snakemake@output[[1]]
 
