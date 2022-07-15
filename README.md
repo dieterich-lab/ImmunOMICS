@@ -208,7 +208,7 @@ singularity run -B /Host_directory aminale_immun2sev_latest.sif \
                   "snakemake --cores all all --snakefile src/snakefile  \
                   --configfile /path_to_config/config.yml --directory /writable_directory"
 ```
-Singularity image aminale_immun2sev_latest.sif can be found in [zenodo]([zenodo](https://doi.org/10.5281/zenodo.6811191) or you can convert the  pre-compiled all-in-one Docker image to singularity as described [here](https://docs.sylabs.io/guides/2.6/user-guide/singularity_and_docker.html). 
+Singularity image aminale_immun2sev_latest.sif can be found in [zenodo](https://doi.org/10.5281/zenodo.6811191) or you can convert the  pre-compiled all-in-one Docker image to singularity as described [here](https://docs.sylabs.io/guides/2.6/user-guide/singularity_and_docker.html). 
 
 Notes & Tips
 ------------
