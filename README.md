@@ -167,7 +167,7 @@ docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale
 
 ```bash
 # download the Docker image 
-docker pull aminale/immun2sev:firstpush
+docker pull aminale/immun2sev:latest
 
 # run the Snakemake pipeline through the container
 docker run -it --rm --mount "type=bind,src=Host_directory,dst=Path_in_container" immun2sev \
@@ -208,7 +208,7 @@ singularity run -B /Host_directory aminale_immun2sev_firstpush-2022-07-07.sif \
                   "snakemake --cores all all --snakefile src/snakefile  \
                   --configfile /path_to_config/config.yml --directory /writable_directory"
 ```
-Singularity image aminale_immun2sev_firstpush-2022-07-07.sif can be found in `DOI:10.5281/zenodo.6811191` or you can convert the  pre-compiled all-in-one Docker image to singularity as described [here](https://docs.sylabs.io/guides/2.6/user-guide/singularity_and_docker.html). 
+Singularity image aminale_immun2sev_latest.sif can be found in `DOI:10.5281/zenodo.6811191` or you can convert the  pre-compiled all-in-one Docker image to singularity as described [here](https://docs.sylabs.io/guides/2.6/user-guide/singularity_and_docker.html). 
 
 Notes & Tips
 ------------
