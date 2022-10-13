@@ -86,8 +86,8 @@ rule train_model:
         CC=out+"merged_training/annotation.csv",
         GE=out+"merged_training/selected_ge.csv"
     output:
-       validation=out+"merged_training/val_set.pkl",
-       training=out+"merged_training/train_set.pkl",
+       val_set=out+"merged_training/val_set.pkl",
+       train_set=out+"merged_training/train_set.pkl",
        model_j=out+"merged_training/model_CC_GE.pkl",
        model_e=out+"merged_training/model_GE.pkl",
        model_c=out+"merged_training/model_CC.pkl",
@@ -97,14 +97,14 @@ rule train_model:
        LReg_c=out+"merged_training/LReg_CC.pkl",
        LogReg_e=out+"merged_training/LogReg_GE.pkl",
        LogReg_c=out+"merged_training/LogReg_CC.pkl",
-       Lasso_e=out+"merged_training/Lasso_GE.pkl",
-       Lasso_c=out+"merged_training/Lasso_CC.pkl",       
+       #Lasso_e=out+"merged_training/Lasso_GE.pkl",
+       #Lasso_c=out+"merged_training/Lasso_CC.pkl",       
        RF_e=out+"merged_training/RF_GE.pkl",
        RF_c=out+"merged_training/RF_CC.pkl",       
        svm_j=out+"merged_training/svm_CC_GE.pkl",    
        LReg_j=out+"merged_training/LReg_CC_GE.pkl",         
        LogReg_j=out+"merged_training/LogReg_CC_GE.pkl",    
-       Lasso_j=out+"merged_training/Lasso_CC_GE.pkl",  
+       #Lasso_j=out+"merged_training/Lasso_CC_GE.pkl",  
        RF_j=out+"merged_training/RF_CC_GE.pkl",
        
     singularity:
@@ -173,12 +173,12 @@ rule predict:
        #pred_e_=out+"{var1}/pred_GE.txt",
        #pred_c_=out+"{var1}/pred_CC.txt",       
        
-       fig_svm=out+"{var1}/svm_out.pdf",           
-       fig_LReg=out+"{var1}/LReg_out.pdf",           
-       fig_LogReg=out+"{var1}/LogReg_out.pdf",           
+       svm_fig=out+"{var1}/svm_out.pdf",           
+       LReg_fig=out+"{var1}/LReg_out.pdf",           
+       LogReg_fig=out+"{var1}/LogReg_out.pdf",           
        #fig_Lasso=out+"{var1}/Lasso_out.pdf",           
-       fig_RF=out+"{var1}/RF_out.pdf",  
-       shap=out+"{var1}/fig_shap.pdf",
+       RF_fig=out+"{var1}/RF_out.pdf",  
+       out_shap=out+"{var1}/fig_shap.pdf",
        
     singularity:
         config['DOCKER']

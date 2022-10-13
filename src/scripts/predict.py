@@ -19,38 +19,28 @@ tf.compat.v1.disable_v2_behavior()
 
 x_cell=pd.read_csv (snakemake.input[0],index_col=0)
 x_exp=pd.read_csv (snakemake.input[1],index_col=0)
-model_j_f=snakemake.input[2]
-model_j_e=snakemake.input[3]
-model_j_c=snakemake.input[4]
-svm_e_f=snakemake.input[6]
-svm_c_f=snakemake.input[7]
-LReg_e_f=snakemake.input[8]
-LReg_c_f=snakemake.input[9]
-LogReg_e_f=snakemake.input[10]
-LogReg_c_f=snakemake.input[11]
-# Lasso_e_f=snakemake.input[12]
-# Lasso_c_f=snakemake.input[13]
-RF_e_f=snakemake.input[12]
-RF_c_f=snakemake.input[13]
-svm_j_f=snakemake.input[14]    
-LReg_j_f=snakemake.input[15]         
-LogReg_j_f=snakemake.input[16]    
-# Lasso_j_f=snakemake.input[17]  
-RF_j_f=snakemake.input[17]
+model_j_f=snakemake.input['model_j']
+model_j_e=snakemake.input['model_e']
+model_j_c=snakemake.input['model_c']
+svm_e_f=snakemake.input['svm_e']
+svm_c_f=snakemake.input['svm_c']
+LReg_e_f=snakemake.input['LReg_e']
+LReg_c_f=snakemake.input['LReg_c']
+LogReg_e_f=snakemake.input['LogReg_e']
+LogReg_c_f=snakemake.input['LogReg_c']
+RF_e_f=snakemake.input['RF_e']
+RF_c_f=snakemake.input['RF_c']
+svm_j_f=snakemake.input['svm_j']    
+LReg_j_f=snakemake.input['LReg_j']         
+LogReg_j_f=snakemake.input['LogReg_j']    
+RF_j_f=snakemake.input['RF_j']
 
-# out1=snakemake.output[0]
-# out2=snakemake.output[1]
-# out3=snakemake.output[2]
-out_fig=snakemake.output[0]
-# out_j_txt=snakemake.output[4]
-# out_e_txt=snakemake.output[5]
-# out_c_txt=snakemake.output[6]
-svm_fig=snakemake.output[1]
-LReg_fig=snakemake.output[2]
-LogReg_fig=snakemake.output[3]
-# Lasso_fig=snakemake.output[4]
-RF_fig=snakemake.output[4]
-out_shap=snakemake.output[5]
+out_fig=snakemake.output['fig']
+svm_fig=snakemake.output['svm_fig']
+LReg_fig=snakemake.output['LReg_fig']
+LogReg_fig=snakemake.output['LogReg_fig']
+RF_fig=snakemake.output['RF_fig']
+out_shap=snakemake.output['out_shap']
 
 def confidence_interval( values):
         mean = np.mean(values)
@@ -92,19 +82,10 @@ def eval_box(metrics,tit):
 
 def eval_box_sbn(metrics,tit):
     f = plt.figure()
-#     val_vec=list()
-#     bt_vec=list()
-#     tp_vec=list()
-#     x_vec=list()
     data=pd.DataFrame([], columns=["modality",'value'])
     for d in metrics:
         data_=pd.DataFrame([np.full((len(metrics[d])), d),metrics[d]], index=["modality",'value'])
         data=data.append(data_.transpose(),ignore_index=True)
-#         val, bt, tp= confidence_interval(metrics[d])
-#         val_vec.append(val)
-#         bt_vec.append(val-bt)
-#         tp_vec.append(tp-val)
-#         x_vec.append(d)
     data.value= data.value.astype('float')
     mod=data.modality.unique()
     if len(mod)==3:
@@ -114,33 +95,16 @@ def eval_box_sbn(metrics,tit):
     with plt.rc_context({'figure.figsize': (10, 8), 'figure.dpi':96, "font.size" : 16}):
 
         g = sns.boxplot(x="modality", y='value', data=data)
-    #     g.fig.subplots_adjust(top=0.8)
-    #     g.fig.suptitle('HCM vs. DCM') 
 
         add_stat_annotation(g, x="modality", y='value', data=data,
                         box_pairs=pairs,
                         test='Mann-Whitney', text_format='star', loc='inside', verbose=2)
-#         plt.show()    
-#     with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300, "font.size" : 16}):
-# #         plt.errorbar(x_vec, val_vec, yerr=(bt_vec, tp_vec), linestyle="None",  fmt="ob",  capsize=3,  ecolor="k")
-#         plt.errorbar(x_vec, val_vec, yerr=(bt_vec, tp_vec),fmt='o', 
-#             capsize=5,
-#             ecolor='k', 
-#             lw=3,
-#             ls = ':',
-#             color='blue')
         plt.ylabel(tit)
         if len(mod)==3:
             plt.xlabel('modality')
         else:
             plt.xlabel('model')
     
-#         plt.ylim(0.4, 1.05)
-#         plt.plot([], c='k', label='CI 95%')
-#         plt.plot([], c='blue', label='mean')
-#         plt.legend(loc="lower right")
-#         plt.savefig(tit, format='pdf', dpi=360)
-#         plt.show()
     return f
 
 
@@ -216,13 +180,6 @@ if __name__ == "__main__":
     with open(LogReg_c_f, 'rb') as b:
         LogReg_c=pickle.load(b)
 
-#     with open(Lasso_j_f, 'rb') as b:
-#         Lasso_j=pickle.load(b)
-#     with open(Lasso_e_f, 'rb') as b:
-#         Lasso_e=pickle.load(b)
-#     with open(Lasso_c_f, 'rb') as b:
-#         Lasso_c=pickle.load(b)
-
     with open(RF_j_f, 'rb') as b:
         RF_j=pickle.load(b)
     with open(LReg_e_f, 'rb') as b:
@@ -242,8 +199,6 @@ if __name__ == "__main__":
     x_exp= x_exp.drop('condition',axis=1)
     x_exp= x_exp.drop('who_score',axis=1)
     
-#     x_cell= x_cell[['B naive','NK','CD8 TEM','CD4 Naive','Platelet','cDC2','CD8 TCM', 'CD16 Mono','pDC',"CD4 Proliferating",'MAIT', 'CD4 TCM',"B memory",  "CD14 Mono","CD4 CTL"]]
-    #, 'Treg', "B intermediate",'gdT',"Plasmablast", 'NK Proliferating']]
     
     
     genes = x_exp.columns
@@ -254,9 +209,6 @@ if __name__ == "__main__":
 
     x_exp = minmax_scale(x_exp, axis = 0)
     x_cell= x_cell.div(x_cell.sum(axis=1), axis=0)
-#     y_score1_Lasso=predict_loop(list(Lasso_j.values()),np.concatenate((x_exp,x_cell), axis=1))
-#     y_score2_Lasso=predict_loop(list(Lasso_e.values()),x_exp)
-#     y_score3_Lasso=predict_loop(list(Lasso_c.values()),x_cell)
 
     y_score1_RF=predict_loop(list(RF_j.values()),np.concatenate((x_exp,x_cell), axis=1))
     y_score2_RF=predict_loop(list(RF_e.values()),x_exp)
@@ -279,27 +231,7 @@ if __name__ == "__main__":
     y_score2_LogReg=predict_loop(list(LogReg_e.values()),x_exp)
     y_score3_LogReg=predict_loop(list(LogReg_c.values()),x_cell)
     
-    
-#     y_score1 = pd.DataFrame([])
-#     y_score2 = pd.DataFrame([])
-#     y_score3 = pd.DataFrame([])
-
-#     i=0
-#     for model in model_j.values():
-#         y_score1['sampling'+str(i)]=model.predict([x_exp,x_cell]).flatten()
-#         i=i+1
-#     i=0    
-#     for model in model_e.values():
-#         y_score2['sampling'+str(i)]=model.predict(x_exp).flatten()
-#         i=i+1
-#     i=0    
-#     for model in model_c.values():
-#         y_score3['sampling'+str(i)]=model.predict(x_cell).flatten()
-#         i=i+1
     all_yscores={out_fig:[y_score1,y_score2,y_score3], svm_fig:[y_score1_svm,y_score2_svm,y_score3_svm],LReg_fig:[y_score1_LReg,y_score2_LReg,y_score3_LReg],LogReg_fig:[y_score1_LogReg,y_score2_LogReg,y_score3_LogReg], RF_fig:[y_score1_RF,y_score2_RF,y_score3_RF]}
-#     comp_res=dict()
-#     all_yscores={LogReg_fig:[y_score1_LogReg,y_score2_LogReg,y_score3_LogReg]}
-#                  , RF_fig:[y_score1_RF,y_score2_RF,y_score3_RF] }    
     comp={}
     for key in all_yscores.keys():
 #         if key==out_fig:
@@ -367,10 +299,7 @@ if __name__ == "__main__":
         pp.savefig(fig10, bbox_inches='tight')
         pp.savefig(fig11, bbox_inches='tight')
         pp.savefig(fig12, bbox_inches='tight')
-        pp.savefig(fig13, bbox_inches='tight')
-#         pp.savefig(fig14, bbox_inches='tight')
-
-#         pp.savefig(fig7, bbox_inches='tight')        
+        pp.savefig(fig13, bbox_inches='tight')      
         pp.close()
     fig14=eval_box_sbn({'LinearR':comp[LReg_fig]['auc'],'LogisticR':comp[LogReg_fig]['auc'],'SVM':comp[svm_fig]['auc'], 'RF':comp[RF_fig]['auc'], 'CC&GE':comp[out_fig]['auc']},'AUC')
     fig15=eval_box_sbn({'LinearR':comp[LReg_fig]['auprc'],'LogisticR':comp[LogReg_fig]['auprc'],'SVM':comp[svm_fig]['auprc'], 'RF':comp[RF_fig]['auprc'], 'CC&GE':comp[out_fig]['auprc']},'Average Precision')
@@ -387,40 +316,15 @@ if __name__ == "__main__":
     pp.savefig(fig18, bbox_inches='tight')
     pp.savefig(fig19, bbox_inches='tight')
     pp.close()
-    # #SHAP values
-#     x_ref_cell=pd.read_csv (snakemake.input[5],index_col=0)
-#     x_ref_exp=pd.read_csv (snakemake.input[6],index_col=0)
-#     x_ref_exp=x_ref_exp.loc[x_ref_exp['condition'].isin(['Mild','Severe']),:]
-#     x_ref_cell=x_ref_cell.loc[x_ref_cell['condition'].isin(['Mild','Severe']),:]
-#     x_ref_cell=x_ref_cell.drop(['Doublet','Eryth','NK_CD56bright'],axis=1)
 
-#     x_ref_cell=x_ref_cell.loc[x_ref_exp.index,:]
-
-#     x_ref_cell= x_ref_cell.drop('condition',axis=1)
-#     x_ref_exp= x_ref_exp.drop('condition',axis=1)
-#     x_ref_exp= x_ref_exp.drop('who_score',axis=1)
-#     x_ref_exp = minmax_scale(x_ref_exp, axis = 0)
-#     x_ref_cell= x_ref_cell.div(x_ref_cell.sum(axis=1), axis=0)
+                           
     dim_exp = x_exp.shape[1]
     dim_cells = x_cell.shape[1]
 
-    with open(snakemake.input[5], 'rb') as b:
+    with open(snakemake.input['training'], 'rb') as b:
         training_set=pickle.load(b)
     shap_values_all_exp,shap_values_all_cell=shap_loop(list(model_j.values()), training_set,dim_exp, dim_cells,x_exp,x_cell)
-#     i=0
-#     for model_joint in model_j.values():
-#         x_ref_exp=training_set[i][:,:dim_exp]
-#         x_ref_cell=training_set[i][:,dim_exp:(dim_exp+dim_cells)]
-
-#         i=i+1
-#         explainer = shap.DeepExplainer(model_joint, [x_ref_exp,x_ref_cell])
-#         shap_values = explainer.shap_values([np.array(x_exp),np.array(x_cell)])
-#         if model_joint ==model_j[0]:
-#             shap_values_all_exp=shap_values[0][0]
-#             shap_values_all_cell=shap_values[0][1]                
-#         else:
-#             shap_values_all_exp=shap_values_all_exp+shap_values[0][0]
-#             shap_values_all_cell=shap_values_all_cell+shap_values[0][1]    
+ 
     nb=len(model_j)
     f1 = plt.figure()
     with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):

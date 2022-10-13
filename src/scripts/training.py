@@ -5,40 +5,40 @@ import numpy as np
 import pandas as pd
 import random
 import os
-####*IMPORANT*: Have to do this line *before* importing tensorflow
 import tensorflow as tf
 from keras.callbacks import ModelCheckpoint
 from sklearn.utils import resample
 from keras.models import load_model
-from sklearn.linear_model import LinearRegression,LogisticRegression,Lasso
+from sklearn.linear_model import LinearRegression,LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 # from numba import njit, prange
 # from keras import backend as K
 # print(tf.config.list_physical_devices("GPU"))
-x_cell=pd.read_csv (snakemake.input[0],index_col=0)
-x_exp=pd.read_csv (snakemake.input[1],index_col=0)
-train_set_f=snakemake.output[1]
-val_set_f=snakemake.output[0]
-model_j_f=snakemake.output[2]
-model_e_f=snakemake.output[3]
-model_c_f=snakemake.output[4]
-svm_e_f=snakemake.output[5]
-svm_c_f=snakemake.output[6]
-LReg_e_f=snakemake.output[7]
-LReg_c_f=snakemake.output[8]
-LogReg_e_f=snakemake.output[9]
-LogReg_c_f=snakemake.output[10]
-Lasso_e_f=snakemake.output[11]
-Lasso_c_f=snakemake.output[12]
-RF_e_f=snakemake.output[13]
-RF_c_f=snakemake.output[14]
-svm_j_f=snakemake.output[15]
-LReg_j_f=snakemake.output[16]
-LogReg_j_f=snakemake.output[17]
-Lasso_j_f=snakemake.output[18]
-RF_j_f=snakemake.output[19]
+x_cell=pd.read_csv (snakemake.input['CC'],index_col=0)
+x_exp=pd.read_csv (snakemake.input['GE'],index_col=0)
+train_set_f=snakemake.output['train_set']
+val_set_f=snakemake.output['val_set']
+model_j_f=snakemake.output['model_j']
+model_e_f=snakemake.output['model_e']
+model_c_f=snakemake.output['model_c']
+svm_e_f=snakemake.output['svm_e']
+svm_c_f=snakemake.output['svm_c']
+LReg_e_f=snakemake.output['LReg_e']
+LReg_c_f=snakemake.output['LReg_c']
+LogReg_e_f=snakemake.output['LogReg_e']
+LogReg_c_f=snakemake.output['LogReg_c']
+# Lasso_e_f=snakemake.output[11]
+# Lasso_c_f=snakemake.output[12]
+RF_e_f=snakemake.output['RF_e']
+RF_c_f=snakemake.output['RF_c']
+svm_j_f=snakemake.output['svm_j']
+LReg_j_f=snakemake.output['LReg_j']
+LogReg_j_f=snakemake.output['LogReg_j']
+# Lasso_j_f=snakemake.output[18]
+RF_j_f=snakemake.output['RF_j']
 path=snakemake.params[0]
+
 def reset_random_seeds():
    os.environ['PYTHONHASHSEED']=str(1)
    tf.random.set_seed(0)
@@ -84,7 +84,7 @@ def training(model, trainDataOne,y, valid_set):
 
 
 
-def build_classifier2(inp1, inp2):
+def build_j_classifier(inp1, inp2):
     reset_random_seeds()
     # define two sets of inputs
     inputA = tf.keras.layers.Input(shape=(inp1.shape[1],))
@@ -153,12 +153,11 @@ def provide_stratified_bootstap_sample_indices(bs_sample,percent):
 # @njit(parallel=True)
 def train_loop(sets,dim_exp,dim_cells ):
     n_iterations = 30
-    train_set = list()
+    training_set = list()
     val_set = list()
     model_j={}
     model_e={}
     model_c={}
-    state=[]
     random.seed(1234)
     seeds = random.sample(range(0, 1000), n_iterations)
     for i in range(n_iterations):
@@ -172,40 +171,39 @@ def train_loop(sets,dim_exp,dim_cells ):
         train= sets[bs_index_list_stratified , :]
         test = np.array([x for x in sets if x.tolist() not in train.tolist()])
         # fit model
-        model = build_classifier2(train[:,:dim_exp],train[:,dim_exp:(dim_exp+dim_cells)])
+        model = build_j_classifier(train[:,:dim_exp],train[:,dim_exp:(dim_exp+dim_cells)])
         model, history= training(model, [train[:,:dim_exp],train[:,dim_exp:(dim_exp+dim_cells)]]
                                  , train[:,-1],([test[:,:dim_exp],test[:,dim_exp:(dim_exp+dim_cells)]],test[:,-1]))
         model_j[i]=load_model(model_j_f+'.h5')
-        LReg_j[i] = LinearRegression().fit(test[:,:(dim_exp+dim_cells)],test[:,-1])
-        LogReg_j[i] = LogisticRegression().fit(test[:,:(dim_exp+dim_cells)],test[:,-1])
-        Lasso_j[i] = Lasso().fit(test[:,:(dim_exp+dim_cells)],test[:,-1])        
-        svm_j[i] = svm.SVC().fit(test[:,:(dim_exp+dim_cells)],test[:,-1])
-        RF_j[i] = RandomForestClassifier().fit(test[:,:(dim_exp+dim_cells)],test[:,-1])        
+        train_set=train[:,:(dim_exp+dim_cells)]
+        LReg_j[i] = LinearRegression().fit(train_set,train[:,-1])
+        LogReg_j[i] = LogisticRegression(penalty= 'none').fit(train_set,train[:,-1])
+        svm_j[i] = svm.SVC(kernel='linear').fit(train_set,train[:,-1])
+        RF_j[i] = RandomForestClassifier().fit(train_set,train[:,-1])        
         # evaluate model
+        train_set=train[:,:dim_exp]
         model = build_classifier(train[:,:dim_exp])
-        model, history= training(model, train[:,:dim_exp]
-                                 , train[:,-1],(test[:,:dim_exp],test[:,-1]))
+        model, history= training(model, train_set, train[:,-1],(test[:,:dim_exp],test[:,-1]))
         model_e[i]=load_model(model_j_f+'.h5')
-        LReg_e[i] = LinearRegression().fit(test[:,:dim_exp],test[:,-1])
-        LogReg_e[i] = LogisticRegression().fit(test[:,:dim_exp],test[:,-1])
-        Lasso_e[i] = Lasso().fit(test[:,:dim_exp],test[:,-1])        
-        svm_e[i] = svm.SVC().fit(test[:,:dim_exp],test[:,-1])
-        RF_e[i] = RandomForestClassifier().fit(test[:,:dim_exp],test[:,-1])
+        LReg_e[i] = LinearRegression().fit(train_set,train[:,-1])
+        LogReg_e[i] = LogisticRegression(penalty= 'none').fit(train_set,train[:,-1])
+        svm_e[i] = svm.SVC(kernel='linear').fit(train_set,train[:,-1])
+        RF_e[i] = RandomForestClassifier().fit(train_set,train[:,-1])
         # evaluate model
+        train_set=train[:,dim_exp:(dim_exp+dim_cells)]
         model = build_classifier(train[:,dim_exp:(dim_exp+dim_cells)])
-        model, history= training(model, train[:,dim_exp:(dim_exp+dim_cells)]
+        model, history= training(model, train_set
                                  , train[:,-1],(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1]))
         model_c[i]=load_model(model_j_f+'.h5')
-        LReg_c[i] = LinearRegression().fit(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1])
-        LogReg_c[i] = LogisticRegression().fit(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1])        
-        Lasso_c[i] = Lasso().fit(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1])        
-        svm_c[i] = svm.SVC().fit(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1])
-        RF_c[i] = RandomForestClassifier().fit(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1])        
+        LReg_c[i] = LinearRegression().fit(train_set,train[:,-1])
+        LogReg_c[i] = LogisticRegression(penalty= 'none').fit(train_set,train[:,-1])        
+        svm_c[i] = svm.SVC(kernel='linear').fit(train_set,train[:,-1])
+        RF_c[i] = RandomForestClassifier().fit(train_set,train[:,-1])        
 
         # evaluate model 
         val_set.append(test)    
-        train_set.append(train)        
-    return model_j, model_e, model_c, val_set, train_set,state
+        training_set.append(train)        
+    return model_j, model_e, model_c, val_set, training_set
 
 
 if __name__ == "__main__":
@@ -215,14 +213,14 @@ if __name__ == "__main__":
     LogReg_e={}
     svm_e={}
     svm_c={}
-    Lasso_e={}
-    Lasso_c={}
+#     Lasso_e={}
+#     Lasso_c={}
     RF_e={}
     RF_c={}
     svm_j={}
     LReg_j={}
     LogReg_j={}
-    Lasso_j={}
+#     Lasso_j={}
     RF_j={}
     
     x_exp=x_exp.loc[x_exp['condition'].isin(['Mild','Severe']),:]
@@ -248,37 +246,7 @@ if __name__ == "__main__":
     sets = np.column_stack((sets, Ytrain))
     dim_exp = x_exp.shape[1]
     dim_cells = x_cell.shape[1]
-    model_j, model_e, model_c, val_set, train_set,state=train_loop(sets,dim_exp,dim_cells )
-#     random.seed(0)
-#     seeds = random.sample(range(0, 500), 30)
-#     for i in range(n_iterations):
-#         random.seed(seeds[i])
-#         print(i)
-#         # prepare train and test sets
-#         #train = resample(sets, n_samples=n_size)
-#         bs_index_list_stratified= provide_stratified_bootstap_sample_indices(sets,0.8)
-#         train= sets[bs_index_list_stratified , :]
-#         test = np.array([x for x in sets if x.tolist() not in train.tolist()])
-#         # fit model
-#         model = build_classifier2(train[:,:dim_exp],train[:,dim_exp:(dim_exp+dim_cells)])
-#         model, history= training(model, [train[:,:dim_exp],train[:,dim_exp:(dim_exp+dim_cells)]]
-#                                  , train[:,-1],([test[:,:dim_exp],test[:,dim_exp:(dim_exp+dim_cells)]],test[:,-1]))
-#         model_j[i]=load_model(model_j_f+'.h5')
-#         # evaluate model
-#         model = build_classifier(train[:,:dim_exp])
-#         model, history= training(model, train[:,:dim_exp]
-#                                  , train[:,-1],(test[:,:dim_exp],test[:,-1]))
-#         model_e[i]=load_model(model_j_f+'.h5')
-
-#         # evaluate model
-#         model = build_classifier(train[:,dim_exp:(dim_exp+dim_cells)])
-#         model, history= training(model, train[:,dim_exp:(dim_exp+dim_cells)]
-#                                  , train[:,-1],(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1]))
-#         model_c[i]=load_model(model_j_f+'.h5')
-
-#         # evaluate model 
-#         val_set.append(test)    
-#         train_set.append(train)        
+    model_j, model_e, model_c, val_set, train_set=train_loop(sets,dim_exp,dim_cells )
 
     with open(val_set_f, 'wb') as b:
         pickle.dump(val_set,b)
@@ -302,10 +270,6 @@ if __name__ == "__main__":
         pickle.dump(LogReg_e,b)        
     with open(LogReg_c_f, 'wb') as b:
         pickle.dump(LogReg_c,b)       
-    with open(Lasso_c_f, 'wb') as b:
-        pickle.dump(Lasso_c,b)        
-    with open(Lasso_e_f, 'wb') as b:
-        pickle.dump(Lasso_e,b)          
     with open(RF_e_f, 'wb') as b:
         pickle.dump(RF_e,b)        
     with open(RF_c_f, 'wb') as b:
@@ -319,8 +283,3 @@ if __name__ == "__main__":
         pickle.dump(LReg_j,b)       
     with open(svm_j_f, 'wb') as b:
         pickle.dump(svm_j,b)       
-    with open(Lasso_j_f, 'wb') as b:
-        pickle.dump(Lasso_j,b)       
-        
-#     with open(model_c_f+'state.pkl', 'wb') as b:
-#         pickle.dump(state,b)
