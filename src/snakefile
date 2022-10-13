@@ -91,6 +91,21 @@ rule train_model:
        model_j=out+"merged_training/model_CC_GE.pkl",
        model_e=out+"merged_training/model_GE.pkl",
        model_c=out+"merged_training/model_CC.pkl",
+       svm_e=out+"merged_training/svm_GE.pkl",
+       svm_c=out+"merged_training/svm_CC.pkl",
+       LReg_e=out+"merged_training/LReg_GE.pkl",
+       LReg_c=out+"merged_training/LReg_CC.pkl",
+       LogReg_e=out+"merged_training/LogReg_GE.pkl",
+       LogReg_c=out+"merged_training/LogReg_CC.pkl",
+       Lasso_e=out+"merged_training/Lasso_GE.pkl",
+       Lasso_c=out+"merged_training/Lasso_CC.pkl",       
+       RF_e=out+"merged_training/RF_GE.pkl",
+       RF_c=out+"merged_training/RF_CC.pkl",       
+       svm_j=out+"merged_training/svm_CC_GE.pkl",    
+       LReg_j=out+"merged_training/LReg_CC_GE.pkl",         
+       LogReg_j=out+"merged_training/LogReg_CC_GE.pkl",    
+       Lasso_j=out+"merged_training/Lasso_CC_GE.pkl",  
+       RF_j=out+"merged_training/RF_CC_GE.pkl",
        
     singularity:
         config['DOCKER']
@@ -133,16 +148,38 @@ rule predict:
        #ge_ref = out+"merged_training/selected_ge.csv",
        #pred_v=out+"merged_training/pred_CC_GE.csv"      
        training=out+"merged_training/train_set.pkl",
+       svm_e=out+"merged_training/svm_GE.pkl",
+       svm_c=out+"merged_training/svm_CC.pkl",
+       LReg_e=out+"merged_training/LReg_GE.pkl",
+       LReg_c=out+"merged_training/LReg_CC.pkl",
+       LogReg_e=out+"merged_training/LogReg_GE.pkl",
+       LogReg_c=out+"merged_training/LogReg_CC.pkl",
+       #Lasso_e=out+"merged_training/Lasso_GE.pkl",
+       #Lasso_c=out+"merged_training/Lasso_CC.pkl",       
+       RF_e=out+"merged_training/RF_GE.pkl",
+       RF_c=out+"merged_training/RF_CC.pkl",    
+       svm_j=out+"merged_training/svm_CC_GE.pkl",    
+       LReg_j=out+"merged_training/LReg_CC_GE.pkl",         
+       LogReg_j=out+"merged_training/LogReg_CC_GE.pkl",    
+       #Lasso_j=out+"merged_training/Lasso_CC_GE.pkl",  
+       RF_j=out+"merged_training/RF_CC_GE.pkl",
        
     output:
-       pred_j=out+"{var1}/pred_CC_GE.csv",
-       pred_e=out+"{var1}/pred_GE.csv",
-       pred_c=out+"{var1}/pred_CC.csv",
-       fig=out+"{var1}/fig_metrics.pdf",           
-       pred_j_=out+"{var1}/pred_CC_GE.txt",
-       pred_e_=out+"{var1}/pred_GE.txt",
-       pred_c_=out+"{var1}/pred_CC.txt",       
-       shap=out+"{var1}/fig_shap.pdf"       
+       #pred_j=out+"{var1}/pred_CC_GE.csv",
+       #pred_e=out+"{var1}/pred_GE.csv",
+       #pred_c=out+"{var1}/pred_CC.csv",
+       fig=out+"{var1}/out.pdf",           
+       #pred_j_=out+"{var1}/pred_CC_GE.txt",
+       #pred_e_=out+"{var1}/pred_GE.txt",
+       #pred_c_=out+"{var1}/pred_CC.txt",       
+       
+       fig_svm=out+"{var1}/svm_out.pdf",           
+       fig_LReg=out+"{var1}/LReg_out.pdf",           
+       fig_LogReg=out+"{var1}/LogReg_out.pdf",           
+       #fig_Lasso=out+"{var1}/Lasso_out.pdf",           
+       fig_RF=out+"{var1}/RF_out.pdf",  
+       shap=out+"{var1}/fig_shap.pdf",
+       
     singularity:
         config['DOCKER']
        
@@ -150,4 +187,4 @@ rule predict:
     
 ###################################### rule all #################################################################################
 rule all:
-       input: expand(out+"{var1}/fig_metrics.pdf", var1 =test_set.values() )
+       input: expand(out+"{var1}/fig_shap.pdf", var1 =test_set.values() )

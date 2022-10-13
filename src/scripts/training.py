@@ -10,16 +10,34 @@ import tensorflow as tf
 from keras.callbacks import ModelCheckpoint
 from sklearn.utils import resample
 from keras.models import load_model
+from sklearn.linear_model import LinearRegression,LogisticRegression,Lasso
+from sklearn.ensemble import RandomForestClassifier
+from sklearn import svm
 # from numba import njit, prange
 # from keras import backend as K
 # print(tf.config.list_physical_devices("GPU"))
 x_cell=pd.read_csv (snakemake.input[0],index_col=0)
 x_exp=pd.read_csv (snakemake.input[1],index_col=0)
-train_set_f=snakemake.output[0]
-val_set_f=snakemake.output[1]
+train_set_f=snakemake.output[1]
+val_set_f=snakemake.output[0]
 model_j_f=snakemake.output[2]
 model_e_f=snakemake.output[3]
 model_c_f=snakemake.output[4]
+svm_e_f=snakemake.output[5]
+svm_c_f=snakemake.output[6]
+LReg_e_f=snakemake.output[7]
+LReg_c_f=snakemake.output[8]
+LogReg_e_f=snakemake.output[9]
+LogReg_c_f=snakemake.output[10]
+Lasso_e_f=snakemake.output[11]
+Lasso_c_f=snakemake.output[12]
+RF_e_f=snakemake.output[13]
+RF_c_f=snakemake.output[14]
+svm_j_f=snakemake.output[15]
+LReg_j_f=snakemake.output[16]
+LogReg_j_f=snakemake.output[17]
+Lasso_j_f=snakemake.output[18]
+RF_j_f=snakemake.output[19]
 path=snakemake.params[0]
 def reset_random_seeds():
    os.environ['PYTHONHASHSEED']=str(1)
@@ -158,25 +176,55 @@ def train_loop(sets,dim_exp,dim_cells ):
         model, history= training(model, [train[:,:dim_exp],train[:,dim_exp:(dim_exp+dim_cells)]]
                                  , train[:,-1],([test[:,:dim_exp],test[:,dim_exp:(dim_exp+dim_cells)]],test[:,-1]))
         model_j[i]=load_model(model_j_f+'.h5')
+        LReg_j[i] = LinearRegression().fit(test[:,:(dim_exp+dim_cells)],test[:,-1])
+        LogReg_j[i] = LogisticRegression().fit(test[:,:(dim_exp+dim_cells)],test[:,-1])
+        Lasso_j[i] = Lasso().fit(test[:,:(dim_exp+dim_cells)],test[:,-1])        
+        svm_j[i] = svm.SVC().fit(test[:,:(dim_exp+dim_cells)],test[:,-1])
+        RF_j[i] = RandomForestClassifier().fit(test[:,:(dim_exp+dim_cells)],test[:,-1])        
         # evaluate model
         model = build_classifier(train[:,:dim_exp])
         model, history= training(model, train[:,:dim_exp]
                                  , train[:,-1],(test[:,:dim_exp],test[:,-1]))
         model_e[i]=load_model(model_j_f+'.h5')
-
+        LReg_e[i] = LinearRegression().fit(test[:,:dim_exp],test[:,-1])
+        LogReg_e[i] = LogisticRegression().fit(test[:,:dim_exp],test[:,-1])
+        Lasso_e[i] = Lasso().fit(test[:,:dim_exp],test[:,-1])        
+        svm_e[i] = svm.SVC().fit(test[:,:dim_exp],test[:,-1])
+        RF_e[i] = RandomForestClassifier().fit(test[:,:dim_exp],test[:,-1])
         # evaluate model
         model = build_classifier(train[:,dim_exp:(dim_exp+dim_cells)])
         model, history= training(model, train[:,dim_exp:(dim_exp+dim_cells)]
                                  , train[:,-1],(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1]))
         model_c[i]=load_model(model_j_f+'.h5')
+        LReg_c[i] = LinearRegression().fit(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1])
+        LogReg_c[i] = LogisticRegression().fit(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1])        
+        Lasso_c[i] = Lasso().fit(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1])        
+        svm_c[i] = svm.SVC().fit(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1])
+        RF_c[i] = RandomForestClassifier().fit(test[:,dim_exp:(dim_exp+dim_cells)],test[:,-1])        
 
         # evaluate model 
         val_set.append(test)    
         train_set.append(train)        
     return model_j, model_e, model_c, val_set, train_set,state
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
+    LReg_c={}
+    LReg_e={}
+    LogReg_c={}
+    LogReg_e={}
+    svm_e={}
+    svm_c={}
+    Lasso_e={}
+    Lasso_c={}
+    RF_e={}
+    RF_c={}
+    svm_j={}
+    LReg_j={}
+    LogReg_j={}
+    Lasso_j={}
+    RF_j={}
+    
     x_exp=x_exp.loc[x_exp['condition'].isin(['Mild','Severe']),:]
     x_cell=x_cell.loc[x_cell['condition'].isin(['Mild','Severe']),:]
     x_cell=x_cell.drop(['Doublet','Eryth','NK_CD56bright'],axis=1)
@@ -242,5 +290,37 @@ if __name__ == "__main__":
         pickle.dump(model_e,b)
     with open(model_c_f, 'wb') as b:
         pickle.dump(model_c,b)
+    with open(svm_c_f, 'wb') as b:
+        pickle.dump(svm_c,b)
+    with open(svm_e_f, 'wb') as b:
+        pickle.dump(svm_e,b)   
+    with open(LReg_e_f, 'wb') as b:
+        pickle.dump(LReg_e,b)        
+    with open(LReg_c_f, 'wb') as b:
+        pickle.dump(LReg_c,b)          
+    with open(LogReg_e_f, 'wb') as b:
+        pickle.dump(LogReg_e,b)        
+    with open(LogReg_c_f, 'wb') as b:
+        pickle.dump(LogReg_c,b)       
+    with open(Lasso_c_f, 'wb') as b:
+        pickle.dump(Lasso_c,b)        
+    with open(Lasso_e_f, 'wb') as b:
+        pickle.dump(Lasso_e,b)          
+    with open(RF_e_f, 'wb') as b:
+        pickle.dump(RF_e,b)        
+    with open(RF_c_f, 'wb') as b:
+        pickle.dump(RF_c,b)
+        
+    with open(RF_j_f, 'wb') as b:
+        pickle.dump(RF_j,b)   
+    with open(LogReg_j_f, 'wb') as b:
+        pickle.dump(LogReg_j,b)       
+    with open(LReg_j_f, 'wb') as b:
+        pickle.dump(LReg_j,b)       
+    with open(svm_j_f, 'wb') as b:
+        pickle.dump(svm_j,b)       
+    with open(Lasso_j_f, 'wb') as b:
+        pickle.dump(Lasso_j,b)       
+        
 #     with open(model_c_f+'state.pkl', 'wb') as b:
 #         pickle.dump(state,b)
