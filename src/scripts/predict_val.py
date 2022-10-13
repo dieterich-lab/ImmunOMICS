@@ -180,55 +180,55 @@ if __name__ == "__main__":
     pp.savefig(fig7, bbox_inches='tight')
     pp.close()
 
-    genes = ["CAMP","DEFA3","HBA2","HBB","IGLC2","IGLC3","LCN2","LTF","MTRNR2L12","MTRNR2L8","PPBP","RETN","S100A12","S100A8","S100A9"]
-    cells = ["ASDC","B intermediate","B memory","B naive","CD14 Mono","CD16 Mono","CD4 CTL","CD4 Naive","CD4 Proliferating","CD4 TCM","CD4 TEM","CD8 Naive","CD8 Proliferating","CD8 TCM","CD8 TEM","cDC1","cDC2","dnT","gdT","HSPC","ILC","MAIT","NK","NK Proliferating","NK-CD56bright","pDC","Plasmablast","Platelet","Treg"]
+#     genes = ["CAMP","DEFA3","HBA2","HBB","IGLC2","IGLC3","LCN2","LTF","MTRNR2L12","MTRNR2L8","PPBP","RETN","S100A12","S100A8","S100A9"]
+#     cells = ["ASDC","B intermediate","B memory","B naive","CD14 Mono","CD16 Mono","CD4 CTL","CD4 Naive","CD4 Proliferating","CD4 TCM","CD4 TEM","CD8 Naive","CD8 Proliferating","CD8 TCM","CD8 TEM","cDC1","cDC2","dnT","gdT","HSPC","ILC","MAIT","NK","NK Proliferating","NK-CD56bright","pDC","Plasmablast","Platelet","Treg"]
 
 #     cells= ['B naive','NK','CD8 TEM','CD4 Naive','Platelet','cDC2','CD8 TCM', 'CD16 Mono','pDC',"CD4 Proliferating",'MAIT', 'CD4 TCM',"B memory",  "CD14 Mono","CD4 CTL", 'Treg', "B intermediate",'gdT',"Plasmablast", 'NK Proliferating']
     
-    dim_exp = x_exp.shape[1]
-    dim_cells = x_cell.shape[1]
+#     dim_exp = x_exp.shape[1]
+#     dim_cells = x_cell.shape[1]
 
-    with open(snakemake.input[4], 'rb') as b:
-        training_set=pickle.load(b)
-    shap_values_all_exp,shap_values_all_cell=shap_loop(list(model_j.values()), training_set,dim_exp, dim_cells,test)
-#     i=0
-#     for model_joint in model_j.values():
-#         x_ref_exp=training_set[i][:,:dim_exp]
-#         x_ref_cell=training_set[i][:,dim_exp:(dim_exp+dim_cells)]
+#     with open(snakemake.input[4], 'rb') as b:
+#         training_set=pickle.load(b)
+#     shap_values_all_exp,shap_values_all_cell=shap_loop(list(model_j.values()), training_set,dim_exp, dim_cells,test)
+# #     i=0
+# #     for model_joint in model_j.values():
+# #         x_ref_exp=training_set[i][:,:dim_exp]
+# #         x_ref_cell=training_set[i][:,dim_exp:(dim_exp+dim_cells)]
 
-#         i=i+1
-#         explainer = shap.DeepExplainer(model_joint, [x_ref_exp,x_ref_cell])
-#         shap_values = explainer.shap_values([np.array(x_exp),np.array(x_cell)])
-#         if model_joint ==model_j[0]:
-#             shap_values_all_exp=shap_values[0][0]
-#             shap_values_all_cell=shap_values[0][1]                
-#         else:
-#             shap_values_all_exp=shap_values_all_exp+shap_values[0][0]
-#             shap_values_all_cell=shap_values_all_cell+shap_values[0][1]    
-    nb=len(model_j)
-    f1 = plt.figure(figsize=(4, 3))
-    with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
-        shap.summary_plot(shap_values_all_exp/nb, plot_type= 'violin',features=np.array(x_exp)
-                          , feature_names =genes,color_bar_label='Feature value',show=False)
-    f2 = plt.figure()
+# #         i=i+1
+# #         explainer = shap.DeepExplainer(model_joint, [x_ref_exp,x_ref_cell])
+# #         shap_values = explainer.shap_values([np.array(x_exp),np.array(x_cell)])
+# #         if model_joint ==model_j[0]:
+# #             shap_values_all_exp=shap_values[0][0]
+# #             shap_values_all_cell=shap_values[0][1]                
+# #         else:
+# #             shap_values_all_exp=shap_values_all_exp+shap_values[0][0]
+# #             shap_values_all_cell=shap_values_all_cell+shap_values[0][1]    
+#     nb=len(model_j)
+#     f1 = plt.figure(figsize=(4, 3))
+#     with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
+#         shap.summary_plot(shap_values_all_exp/nb, plot_type= 'violin',features=np.array(x_exp)
+#                           , feature_names =genes,color_bar_label='Feature value',show=False)
+#     f2 = plt.figure()
 
-    with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
-        shap.summary_plot(shap_values_all_exp/nb, plot_type= 'bar',features=np.array(x_exp)
-                          , feature_names =genes,color_bar_label='Feature value',show=False)
-    f3 = plt.figure()
+#     with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
+#         shap.summary_plot(shap_values_all_exp/nb, plot_type= 'bar',features=np.array(x_exp)
+#                           , feature_names =genes,color_bar_label='Feature value',show=False)
+#     f3 = plt.figure()
 
-    with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
-        shap.summary_plot(shap_values_all_cell/nb, plot_type= 'violin',features=x_cell
-                          , feature_names =cells,color_bar_label='Feature value',show=False, max_display=15)
-    f4 = plt.figure()
-    with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
-        shap.summary_plot(shap_values_all_cell/nb, plot_type= 'bar',features=np.array(x_cell)
-                          , feature_names =cells,color_bar_label='Feature value',show=False, max_display=15)
+#     with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
+#         shap.summary_plot(shap_values_all_cell/nb, plot_type= 'violin',features=x_cell
+#                           , feature_names =cells,color_bar_label='Feature value',show=False, max_display=15)
+#     f4 = plt.figure()
+#     with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
+#         shap.summary_plot(shap_values_all_cell/nb, plot_type= 'bar',features=np.array(x_cell)
+#                           , feature_names =cells,color_bar_label='Feature value',show=False, max_display=15)
 
-    pp = PdfPages(out_shap)
-    pp.savefig(f1, bbox_inches='tight')
-    pp.savefig(f2, bbox_inches='tight')
-    pp.savefig(f3, bbox_inches='tight')
-    pp.savefig(f4, bbox_inches='tight')
-    pp.close()
+#     pp = PdfPages(out_shap)
+#     pp.savefig(f1, bbox_inches='tight')
+#     pp.savefig(f2, bbox_inches='tight')
+#     pp.savefig(f3, bbox_inches='tight')
+#     pp.savefig(f4, bbox_inches='tight')
+#     pp.close()
 

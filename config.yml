@@ -1,4 +1,4 @@
-DOCKER: "docker://aminale/test:latest" # Docker image
+DOCKER: "docker://aminale/test:firstpush" # Docker image
 path_out: "/prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/output_rop"  # path to the output directory, if it doesn't exist it will be created 
 path_inp: "/prj/NUM_CODEX_PLUS/Amina/CellSubmission/code_v1/data"     # path to the directory containing the input datasets
 path_ref: "/prj/NUM_CODEX_PLUS/Amina/CellSubmission/code_v1/data/pbmc_multimodal.h5seurat"      # reference dataset for seurat mapping 
