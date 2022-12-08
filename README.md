@@ -202,3 +202,4 @@ Notes & Tips
 ------------
 
 - Please make sure to mount/bind all host repositories you use (for inputs and outputs) into your container and set a writable directory for the --directory option in snakemake. 
+- Sometime snakemake stucks because of running the pipeline multiple time simultaniuosly e.g celltype-specific prediction, in this case you need to run the pipeline without doing anything and it will pick up from where it left off.
