@@ -9,7 +9,7 @@ Overview
 
 The workflow shown below allows predicting COVID-19 severity from scRNA-seq data. The workflow parameters should be set in the config file provided as a parameter for the snakemake command. The inputs are: 
 
-- The training sets: list of datasets that will be used for the training. 
+- The training sets: list of datasets that will be used for the training
 - The testing sets: list of datasets to be tested by the trained model
 - The output directory
 - The number of Top genes differentially expressed between conditions to be selected
@@ -30,15 +30,6 @@ SNK_REPO="`pwd`/Prediction_scOmics"
 
 ```
 
-If you are running jobs on the cluster, it is best first to start a [tmux](https://github.com/tmux/tmux) session so that the session may be re-attached at a later time point. 
-
-```bash
-# start session
-tmux new -s snkmk 
-
-# log back into a session
-tmux -a snkmk
-```
 Config file
 -----------
 Please provide input datasets in the Seurat format h5Seurat. 
@@ -62,7 +53,7 @@ The input datasets should contain the following metadata columns:
 * "sampleID": sample IDs
 * "condition": Mild or Severe
 * "batch": the batch name of your data
-* "who_score": if availbale else =condition (it serves as factor for the traning/validation split)
+* "who_score": if availbale else =condition (it serves as a factor for the training/validation split)
 
 Here is the config file for the testing example. Data can be found in [zenodo](https://doi.org/10.5281/zenodo.6811191).
 
@@ -71,7 +62,6 @@ Here is the config file for the testing example. Data can be found in [zenodo](h
 # INPUT & OUTPUT PATHS
 path_out: "../../output"          # path to the output directory, if it doesn't exist it will be created 
 path_inp: "../data"           # path to the directory containing input datasets in h5Seurat format
-path_ref: "../data/pbmc_multimodal.h5seurat"         # reference dataset for Seurat mapping  
 
 
 # INPUTS PARAMS
@@ -84,9 +74,7 @@ test_data:               # Testing datasets
     set3:  'stanford_pbmc.h5Seurat'        
 
 ```
-Note that you can set as many training and testing datasets as you want. Datasets under `training_data` will be merged, and 80% will be used for the training, and 20 % for the validation split randomly 30 times. 
-
-If you want to test more datasets after generating your prediction model, add the name of the datasets to the `testing_data` dictionary, and snakemake will generate only the missing outputs.
+Note that you can set as many training and testing datasets as you want. Datasets under `training_data` will be merged, 80% of samples (not cells) will be used for the training, and 20 % for the validation split randomly 30 times. 
 
 Output files
 -----------------------
@@ -98,21 +86,21 @@ Once the pipeline has run successfully, you should expect the following files in
     *   `fold_change.csv` - output of the DE analysis between conditions (findMarkers). 
     *   `selected_ge.csv` - expression average of the top genes
     *   `annotation.csv` - matrix representing the number of each cell per sample & type
-    *   `model_CC.pkl` - the learned model based on the Cell Composition (CC)
-    *   `model_GE.pkl` - the learned model based on the Gene Expression (GE)
-    *   `model_CC_GE.pkl` - the learned joint model based on the Cell Composition (CC) and the Gene Expression (GE)
+    *   `MLP_CC.pkl` - the learned model based on the Cell Composition (CC)
+    *   `MLP_GE.pkl` - the learned model based on the Gene Expression (GE)
+    *   `MLP_CC_GE.pkl` - the learned joint model based on the Cell Composition (CC) and the Gene Expression (GE)
     *   `train_set.pkl` - list of the training sets from the 30 samplings
     *   `val_set.pkl` - list of the training sets from the 30 samplings
     *   `val_set.pkl` - list of the training sets from the 30 samplings
     *   `fig_metrics.pdf` - figures representing the different evaluation metrics (AUROC, AUPRC, Accuracy, ...) between the three models "CC, GE, and CC&GE"
-    *   `fig_shap.pdf` - figures representing barplots and violin plots of SHAP values from the joint model "CC&GE" on the validation set
     *   `pred_GE.csv` - prediction output scores per column of the validation set using the GE model (you will get as many columns as the number of samplings)
     *   `pred_CC.csv` - prediction output scores per column of the validation set using the CC model (you will get as many columns as the number of samplings)
     *   `pred_CC_GE.csv` - prediction output scores per column of the validation set using the joint model (you will get as many columns as the number of samplings)
     *   `pred_GE.txt` - evaluation metrics represented by the mean and the confidence interval of 95% of the validation set using the GE model
     *   `pred_CC.txt` - evaluation metrics represented by the mean and the confidence interval of 95% of the validation set using the CC model
     *   `pred_CC_GE.txt` - evaluation metrics represented by the mean and the confidence interval of 95% of the validation set using the joint model
-*   **`{test_data_filename}/`:** - contains the prediction result per testing set. This include the following files: `fig_metrics.pdf`,`fig_shap.pdf`, `pred_GE.csv`, `pred_CC.csv`, `pred_CC_GE.csv`, `pred_GE.txt`, `pred_CC.txt`, `pred_CC_GE.txt`
+*   **`{test_data_filename}/`:** - contains testing set. This include the following files: `selected_ge.csv`,`annotation.csv`, `QC.rds`
+*   **`{Pred}/`:** - contains the prediction result for the merged testing set. This include the following files: `fig_shap.pdf`, `MLP_GE.csv`, `MLP_CC.csv`, `MLP_CC_GE.csv`, `MLP_GE.txt`, `MLP_CC.txt`, `MLP_CC_GE.txt` and comparison to baseline models (Logistic regression, SVM and Random forest)
 
 Reproducibility: Conda   
 ----------------------
