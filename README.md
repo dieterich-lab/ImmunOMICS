@@ -201,5 +201,4 @@ Singularity image aminale_immun2sev_latest.sif can be found in [zenodo](https://
 Notes & Tips
 ------------
 
-- Seurat reference mapping requires high memory usage, so please provide enough resources according to your dataset size.
 - Please make sure to mount/bind all host repositories you use (for inputs and outputs) into your container and set a writable directory for the --directory option in snakemake. 
