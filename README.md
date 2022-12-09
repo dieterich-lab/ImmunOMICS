@@ -55,7 +55,7 @@ The input datasets should contain the following metadata columns:
 * "batch": the batch name of your data
 * "who_score": if availbale else =condition (it serves as a factor for the training/validation split)
 
-Here is the config file for the testing example. Data can be found in [zenodo](https://doi.org/10.5281/zenodo.6811191).
+Here is the config file for the testing example. Data can be found in [zenodo](https://doi.org/10.5281/zenodo.7193236).
 
 
 ```
