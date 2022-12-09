@@ -124,7 +124,7 @@ Once you have installed Conda and Mamba, you can install the software dependenci
 mamba env create --file ${SNK_REPO}/environment.yml
 
 # activate the new Conda environment
-conda activate severityPred_env
+conda activate immun2sev
 ```
 
 
