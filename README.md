@@ -138,7 +138,7 @@ mamba env create --file ${SNK_REPO}/environment.yml
 # activate the new Conda environment
 conda activate severityPred_env
 ```
-All commands needed to reproduce results with conda solution are presented in `job.sh`.
+All commands needed to reproduce results with conda solution are presented in `job.sh`. Make sure to set paths in the config file before you run the commands.
 
 Reproducibility: Docker
 -----------------------
