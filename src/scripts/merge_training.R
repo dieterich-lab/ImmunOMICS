@@ -2,9 +2,8 @@ library(Seurat)
 set.seed(0)
 cohort = snakemake@input
 n = length(cohort)
-print(n)
+#Merge training sets and set as different batches
 for (i in 1:n) {
-  #     cohort_path= paste0(path,"/",chr,".rds")
   print(cohort[[i]])
   chrt = readRDS(cohort[[i]])
   chr_n = strsplit(cohort[[i]], "/")[[1]]

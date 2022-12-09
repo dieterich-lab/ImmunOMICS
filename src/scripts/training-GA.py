@@ -37,6 +37,12 @@ LogReg_j_f = snakemake.output["LogReg_j"]
 RF_j_f = snakemake.output["RF_j"]
 path = snakemake.params[0]
 
+gender = pd.read_csv(snakemake.input["gender"], index_col=0)
+gender_dummies = pd.get_dummies(gender.gender, prefix="gender_")
+gender_dummies.index = gender.index
+age_ = pd.read_csv(snakemake.input["age"], index_col=0)
+age_.age = age_.age.astype("category").cat.codes / len(age_.age.unique())
+
 
 def reset_random_seeds():
     os.environ["PYTHONHASHSEED"] = str(1)
@@ -107,6 +113,8 @@ def build_2modalities_classifier(inp1, inp2):
     # define two sets of inputs
     inputA = tf.keras.layers.Input(shape=(inp1,))
     inputB = tf.keras.layers.Input(shape=(inp2,))
+    inputC = tf.keras.layers.Input(shape=(3,))
+
     # the first branch operates on the first input
     x = tf.keras.layers.Dropout(0.2, seed=0)(inputA)
     x = tf.keras.layers.Dense(
@@ -124,7 +132,14 @@ def build_2modalities_classifier(inp1, inp2):
     )(y)
     y = tf.keras.Model(inputs=inputB, outputs=y)
     # combine the output of the two branches
-    combined = tf.keras.layers.concatenate([x.output, y.output])
+    w = tf.keras.layers.Dense(
+        2,
+        activation="relu",
+        kernel_initializer=tf.keras.initializers.GlorotNormal(seed=1234),
+    )(inputC)
+    w = tf.keras.Model(inputs=inputC, outputs=w)
+    # combine the output of the two branches
+    combined = tf.keras.layers.concatenate([x.output, y.output, w.output])
     z = tf.keras.layers.Dense(
         2,
         activation="relu",
@@ -135,7 +150,7 @@ def build_2modalities_classifier(inp1, inp2):
         activation="sigmoid",
         kernel_initializer=tf.keras.initializers.GlorotNormal(seed=1234),
     )(z)
-    model = tf.keras.Model(inputs=[x.input, y.input], outputs=z)
+    model = tf.keras.Model(inputs=[x.input, y.input, w.input], outputs=z)
     return model
 
 
@@ -158,10 +173,11 @@ def build_1modality_classifier(inp1):
     return model
 
 
-# sampling taking into account WHO score (all modalities should be included in training validation sets for all samplings)
 def provide_stratified_bootstap_sample_indices(bs_sample, percent):
+
     strata = pd.DataFrame(who).value_counts()
     bs_index_list_stratified = []
+
     for idx_stratum_var, n_stratum_var in strata.iteritems():
         data_index_stratum = list(np.where(who == idx_stratum_var[0])[0])
         kk = round(len(data_index_stratum) * percent)
@@ -169,7 +185,6 @@ def provide_stratified_bootstap_sample_indices(bs_sample, percent):
     return bs_index_list_stratified
 
 
-# training task
 def task(bs_index_list_stratified):
     res_task = {}
     train = sets[bs_index_list_stratified, :]
@@ -183,29 +198,38 @@ def task(bs_index_list_stratified):
     model = build_2modalities_classifier(dim_exp, dim_cells)
     model, res_task["history"] = training(
         model,
-        [train[:, :dim_exp], train[:, dim_exp : (dim_exp + dim_cells)]],
-        y,
-        ([test[:, :dim_exp], test[:, dim_exp : (dim_exp + dim_cells)]], test[:, -1]),
+        [
+            train[:, 3 : dim_exp + 3],
+            train[:, dim_exp + 3 : (dim_exp + dim_cells + 3)],
+            train[:, :3],
+        ],
+        train[:, -1],
+        (
+            [
+                test[:, 3 : dim_exp + 3],
+                test[:, dim_exp + 3 : (dim_exp + dim_cells + 3)],
+                test[:, :3],
+            ],
+            test[:, -1],
+        ),
         ref,
     )
-
     res_task["model_j"] = load_model(model_j_f + ref + ".h5")
     # build and train and load best 1 modality classifier for gene expression GE
-    train_set = train[:, :dim_exp]
-    model = build_1modality_classifier(dim_exp)
-    model, _ = training(model, train_set, y, (test[:, :dim_exp], test[:, -1]), ref)
+    train_set = train[:, : dim_exp + 3]
+    model = build_1modality_classifier(dim_exp + 3)
+    model, _ = training(model, train_set, y, (test[:, : dim_exp + 3], test[:, -1]), ref)
     res_task["model_e"] = load_model(model_j_f + ref + ".h5")
 
     # build and train and load best 1 modality classifier for cell composition CC
-    train_set = train[:, dim_exp : (dim_exp + dim_cells)]
-    model = build_1modality_classifier(dim_cells)
-    model, _ = training(
-        model,
-        train_set,
-        y,
-        (test[:, dim_exp : (dim_exp + dim_cells)], test[:, -1]),
-        ref,
+    train_set = np.concatenate(
+        (train[:, :3], train[:, dim_exp + 3 : (dim_exp + 3 + dim_cells)]), axis=1
     )
+    test_set = np.concatenate(
+        (test[:, :3], test[:, dim_exp + 3 : (dim_exp + 3 + dim_cells)]), axis=1
+    )
+    model = build_1modality_classifier(dim_cells + 3)
+    model, _ = training(model, train_set, y, (test_set, test[:, -1]), ref)
     res_task["model_c"] = load_model(model_j_f + ref + ".h5")
     return res_task
 
@@ -238,7 +262,7 @@ def task_comaparative(bs_list_stratified):
     y = train[:, -1]
 
     # evaluate CC&GE model
-    train_set = train[:, : (dim_exp + dim_cells)]
+    train_set = train[:, : (dim_exp + dim_cells + 3)]
     models = {
         "LogReg_j": LogisticRegression(),
         "svm_j": svm.SVC(),
@@ -248,7 +272,7 @@ def task_comaparative(bs_list_stratified):
         res_task[key] = models[key].fit(train_set, train[:, -1])
 
     # evaluate GE model
-    train_set = train[:, :dim_exp]
+    train_set = train[:, : dim_exp + 3]
     models = {
         "LogReg_e": LogisticRegression(),
         "svm_e": svm.SVC(),
@@ -258,7 +282,9 @@ def task_comaparative(bs_list_stratified):
         res_task[key] = models[key].fit(train_set, y)
 
     # evaluate CC model
-    train_set = train[:, dim_exp : (dim_exp + dim_cells)]
+    train_set = np.concatenate(
+        (train[:, :3], train[:, dim_exp + 3 : (dim_exp + 3 + dim_cells)]), axis=1
+    )
     models = {
         "LogReg_c": LogisticRegression(),
         "svm_c": svm.SVC(),
@@ -293,19 +319,23 @@ if __name__ == "__main__":
     x_exp = x_exp.loc[x_exp["condition"].isin(["Mild", "Severe"]), :]
     x_cell = x_cell.loc[x_cell["condition"].isin(["Mild", "Severe"]), :]
     x_cell = x_cell.loc[x_exp.index, :]
+    gender_dummies = gender_dummies.loc[x_exp.index, :]
+    age_ = age_.loc[x_exp.index, :]
+
     label = x_cell.iloc[:, -1].values
     who = x_exp.iloc[:, -1].values
     x_cell = x_cell.drop("condition", axis=1)
     x_exp = x_exp.drop("condition", axis=1)
     x_exp = x_exp.drop("who_score", axis=1)
+    genes = x_exp.columns
     le = LabelEncoder()
     Ytrain = le.fit_transform(label)
-    # scale GE data to 0-1 knowing that the Gene expession is between 0 and 15
+    # scale GE data to 0-1 knowing that the Gene expession is between 0 and 10
     x_exp = x_exp / 15
     # compute proportion of celltypes for each sample
     x_cell = x_cell.div(x_cell.sum(axis=1), axis=0)
     # concatenate all data by rows to simplify splitting
-    sets = np.concatenate((x_exp, x_cell), axis=1)
+    sets = np.concatenate((gender_dummies, age_, x_exp, x_cell), axis=1)
     sets = np.column_stack((sets, Ytrain))
     dim_exp = x_exp.shape[1]
     dim_cells = x_cell.shape[1]
@@ -337,7 +367,7 @@ if __name__ == "__main__":
         plt.legend(["train", "test"], loc="upper left")
         pp.savefig(f, bbox_inches="tight")
     pp.close()
-    # train baseline models logistic, SVM and RF
+    # train baseline models Linear, logistic, SVM and RF
     res_comparative = compare()
     # concatenate all results in one dict
     res = {**res, **res_comparative}
@@ -361,9 +391,6 @@ if __name__ == "__main__":
     for key in map_name_file.keys():
         with open(map_name_file[key], "wb") as b:
             pickle.dump(res[key], b)
-    with open(model_j_f+"history.pkl", "wb") as b:
-            pickle.dump(res["history"], b)
-
     # remove tmp files
     l_h5 = os.listdir(path)
     for item in l_h5:

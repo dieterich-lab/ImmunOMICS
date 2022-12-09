@@ -23,7 +23,7 @@ WORKDIR /tmp
 
 # download the conda environment OR copy from local directory
 COPY environment.yml /tmp/environment.yml
-
+RUN pip install --upgrade pip
 # install conda environment
 RUN conda update conda --yes && \
     conda env update -v -n root --file /tmp/environment.yml && \

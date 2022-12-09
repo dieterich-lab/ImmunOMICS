@@ -1,21 +1,14 @@
-# library(Seurat)
 library(SeuratDisk)
-library(dplyr)
+library(tidyverse)
 set.seed(0)
-
-
+# pseudo-bulk of the selected genes
 inp = snakemake@input[[1]]
 fc_file = snakemake@input[[2]]
 out = snakemake@output[[1]]
-nb_genes=  snakemake@params[[1]]
-ch_avr = LoadH5Seurat(inp)
-fc = read.csv(fc_file, row.names = 1)
-top <- fc %>% top_n(n = nb_genes, wt = abs(avg_log2FC))
-
+ch_avr = LoadH5Seurat(paste0(inp,"_norm.h5Seurat"))
+top = read.csv(fc_file, row.names = 1)[,1]
 '%!in%' <- function(x, y)
   ! ('%in%'(x, y))
-top= rownames(top)
-# top = top[top %!in% c('MTRNR2L8','MTRNR2L12')]
 outer= top[top %!in% rownames(ch_avr)]
 inner= top[top %in% rownames(ch_avr)]
 pseud_mtx = as.data.frame(t(as.matrix(ch_avr@assays$RNA@data[inner, ])))
@@ -25,4 +18,3 @@ rownames(pseud_mtx) = ch_avr$sampleID
 pseud_mtx['condition'] = ch_avr$condition
 pseud_mtx['who_score'] = ch_avr$who_score
 write.csv(pseud_mtx, out)
-write.csv( top,paste0(out,".csv"))

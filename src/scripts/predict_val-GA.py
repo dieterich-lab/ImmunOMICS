@@ -98,21 +98,24 @@ if __name__ == "__main__":
     y_score3 = pd.DataFrame([])
 
     i = 0
-    dim_cells = test[i].shape[1] - 1 - dim_exp
-    print(dim_exp)
+    dim_cells = test[i].shape[1] - 4 - dim_exp
     for model in model_j:
-        x_cell = test[i][:, dim_exp : (dim_exp + dim_cells)]
-        x_exp = test[i][:, :dim_exp]
-        y_score1["sampling" + str(i)] = model.predict([x_exp, x_cell]).flatten()
+        x_cell = test[i][:, dim_exp + 3 : (dim_exp + dim_cells + 3)]
+        x_exp = test[i][:, 3 : dim_exp + 3]
+        gender = test[i][:, :3]
+        y_score1["sampling" + str(i)] = model.predict([x_exp, x_cell, gender]).flatten()
         i = i + 1
     i = 0
     for model in model_e:
-        x_exp = test[i][:, :dim_exp]
+        x_exp = test[i][:, : dim_exp + 3]
         y_score2["sampling" + str(i)] = model.predict(x_exp).flatten()
         i = i + 1
     i = 0
     for model in model_c:
-        x_cell = test[i][:, dim_exp : (dim_exp + dim_cells)]
+        x_cell = np.concatenate(
+            (test[i][:, :3], test[i][:, dim_exp + 3 : (dim_exp + 3 + dim_cells)]),
+            axis=1,
+        )
         y_score3["sampling" + str(i)] = model.predict(x_cell).flatten()
         i = i + 1
 

@@ -14,7 +14,6 @@ from statannot import add_stat_annotation
 
 # For SHAP package should disable v2 tensorflow
 tf.compat.v1.disable_v2_behavior()
-# merge Test sets
 x_cell = pd.DataFrame([])
 for elem in snakemake.input["CC"]:
     x_ = pd.read_csv(elem, index_col=0)
@@ -27,8 +26,8 @@ for elem in snakemake.input["GE"]:
 
 # Load data and models
 model_j_f = snakemake.input["model_j"]
-model_e_f = snakemake.input["model_e"]
-model_c_f = snakemake.input["model_c"]
+model_j_e = snakemake.input["model_e"]
+model_j_c = snakemake.input["model_c"]
 svm_e_f = snakemake.input["svm_e"]
 svm_c_f = snakemake.input["svm_c"]
 LogReg_e_f = snakemake.input["LogReg_e"]
@@ -44,6 +43,13 @@ svm_fig = snakemake.output["svm_fig"]
 LogReg_fig = snakemake.output["LogReg_fig"]
 RF_fig = snakemake.output["RF_fig"]
 out_shap = snakemake.output["out_shap"]
+
+
+gender = pd.read_csv(snakemake.input["gender"], index_col=0)
+gender_dummies = pd.get_dummies(gender.gender, prefix="gender_")
+gender_dummies.index = gender.index
+age_ = pd.read_csv(snakemake.input["age"], index_col=0)
+age_.age = age_.age.astype("category").cat.codes / len(age_.age.unique())
 
 
 def confidence_interval(values):
@@ -103,7 +109,11 @@ def eval_box_sbn(metrics, tit):
     if len(mod) == 3:
         pairs = [("CC", "GE"), ("CC", "CC&GE"), ("GE", "CC&GE")]
     else:
-        pairs = [("CC&GE", "SVM"), ("CC&GE", "RF"), ("CC&GE", "LogisticR")]
+        pairs = [
+            ("CC&GE", "SVM"),
+            ("CC&GE", "RF"),
+            ("CC&GE", "LogisticR"),
+        ]
     with plt.rc_context({"figure.figsize": (10, 8), "figure.dpi": 96, "font.size": 16}):
 
         g = sns.boxplot(x="modality", y="value", data=data)
@@ -155,27 +165,37 @@ def shap_loop(model_j, training_set, dim_exp, dim_cells, x_exp, x_cell):
     model_len = len(model_j)
     for i in range(model_len):
         model_joint = model_j[i]
-        x_ref_exp = training_set[i][:, :dim_exp]
-        x_ref_cell = training_set[i][:, dim_exp : (dim_exp + dim_cells)]
-
-        explainer = shap.DeepExplainer(model_joint, [x_ref_exp, x_ref_cell])
-        shap_values = explainer.shap_values([np.array(x_exp), np.array(x_cell)])
+        x_ref_exp = training_set[i][:, 3 : dim_exp + 3]
+        x_ref_cell = training_set[i][:, dim_exp + 3 : (dim_exp + dim_cells + 3)]
+        x_ref_gender = training_set[i][:, :3]
+        explainer = shap.DeepExplainer(
+            model_joint, [x_ref_exp, x_ref_cell, x_ref_gender]
+        )
+        shap_values = explainer.shap_values(
+            [
+                np.array(x_exp),
+                np.array(x_cell),
+                np.concatenate((gender_dummies, age_), axis=1),
+            ]
+        )
         if model_joint == model_j[0]:
             shap_values_all_exp = shap_values[0][0]
             shap_values_all_cell = shap_values[0][1]
+            shap_values_all_gender = shap_values[0][2]
         else:
             shap_values_all_exp = shap_values_all_exp + shap_values[0][0]
             shap_values_all_cell = shap_values_all_cell + shap_values[0][1]
-    return shap_values_all_exp, shap_values_all_cell
+            shap_values_all_gender = shap_values_all_gender + shap_values[0][2]
+    return shap_values_all_exp, shap_values_all_cell, shap_values_all_gender
 
 
 if __name__ == "__main__":
 
     with open(model_j_f, "rb") as b:
         model_j = pickle.load(b)
-    with open(model_e_f, "rb") as b:
+    with open(model_j_e, "rb") as b:
         model_e = pickle.load(b)
-    with open(model_c_f, "rb") as b:
+    with open(model_j_c, "rb") as b:
         model_c = pickle.load(b)
     with open(svm_j_f, "rb") as b:
         svm_j = pickle.load(b)
@@ -183,6 +203,7 @@ if __name__ == "__main__":
         svm_e = pickle.load(b)
     with open(svm_c_f, "rb") as b:
         svm_c = pickle.load(b)
+
     with open(LogReg_j_f, "rb") as b:
         LogReg_j = pickle.load(b)
     with open(LogReg_e_f, "rb") as b:
@@ -191,47 +212,72 @@ if __name__ == "__main__":
         LogReg_c = pickle.load(b)
     with open(RF_j_f, "rb") as b:
         RF_j = pickle.load(b)
-    with open(RF_c_f, "rb") as b:
-        RF_c = pickle.load(b)
+        
     with open(RF_e_f, "rb") as b:
         RF_e = pickle.load(b)
+    with open(RF_c_f, "rb") as b:
+        RF_c = pickle.load(b)
 
-    # prepare the data
+    # prepare data
     x_exp = x_exp.loc[x_exp["condition"].isin(["Mild", "Severe"]), :]
     x_cell = x_cell.loc[x_cell["condition"].isin(["Mild", "Severe"]), :]
     x_cell = x_cell.loc[x_exp.index, :]
-
+    gender_dummies = gender_dummies.loc[x_exp.index.astype(str), :]
+    age_ = age_.loc[x_exp.index.astype(str), :]
     label = x_cell.iloc[:, -1].values
     x_cell = x_cell.drop("condition", axis=1)
     x_exp = x_exp.drop("condition", axis=1)
     x_exp = x_exp.drop("who_score", axis=1)
-
     genes = x_exp.columns
     cells = x_cell.columns
     selected_cols = cells
 
     le = LabelEncoder()
     Ytest = le.fit_transform(label)
-    # scale data to [0,1] where 15 is considered as the max value of normalized gene expression basedd on prior knowledge
     x_exp = x_exp / 15
     x_cell = x_cell.div(x_cell.sum(axis=1), axis=0)
+    x_cell = x_cell.loc[:, selected_cols]
 
-    # perform predictions
-    y_score1_RF = predict_loop(RF_j, np.concatenate((x_exp, x_cell), axis=1))
-    y_score2_RF = predict_loop(RF_e, x_exp)
-    y_score3_RF = predict_loop(RF_c, x_cell)
+    # run prediction
+    y_score1_RF = predict_loop(
+        RF_j, np.concatenate((gender_dummies, age_, x_exp, x_cell), axis=1)
+    )
+    y_score2_RF = predict_loop(
+        RF_e, np.concatenate((gender_dummies, age_, x_exp), axis=1)
+    )
+    y_score3_RF = predict_loop(
+        RF_c, np.concatenate((gender_dummies, age_, x_cell), axis=1)
+    )
 
-    y_score1 = predict_loop(model_j, [x_exp, x_cell])
-    y_score2 = predict_loop(model_e, x_exp)
-    y_score3 = predict_loop(model_c, x_cell)
+    y_score1 = predict_loop(
+        model_j, [x_exp, x_cell, np.concatenate((gender_dummies, age_), axis=1)]
+    )
+    y_score2 = predict_loop(
+        model_e, np.concatenate((gender_dummies, age_, x_exp), axis=1)
+    )
+    y_score3 = predict_loop(
+        model_c, np.concatenate((gender_dummies, age_, x_cell), axis=1)
+    )
 
-    y_score1_svm = predict_loop(svm_j, np.concatenate((x_exp, x_cell), axis=1))
-    y_score2_svm = predict_loop(svm_e, x_exp)
-    y_score3_svm = predict_loop(svm_c, x_cell)
+    y_score1_svm = predict_loop(
+        svm_j, np.concatenate((gender_dummies, age_, x_exp, x_cell), axis=1)
+    )
+    y_score2_svm = predict_loop(
+        svm_e, np.concatenate((gender_dummies, age_, x_exp), axis=1)
+    )
+    y_score3_svm = predict_loop(
+        svm_c, np.concatenate((gender_dummies, age_, x_cell), axis=1)
+    )
 
-    y_score1_LogReg = predict_loop(LogReg_j, np.concatenate((x_exp, x_cell), axis=1))
-    y_score2_LogReg = predict_loop(LogReg_e, x_exp)
-    y_score3_LogReg = predict_loop(LogReg_c, x_cell)
+    y_score1_LogReg = predict_loop(
+        LogReg_j, np.concatenate((gender_dummies, age_, x_exp, x_cell), axis=1)
+    )
+    y_score2_LogReg = predict_loop(
+        LogReg_e, np.concatenate((gender_dummies, age_, x_exp), axis=1)
+    )
+    y_score3_LogReg = predict_loop(
+        LogReg_c, np.concatenate((gender_dummies, age_, x_cell), axis=1)
+    )
 
     # compute metrics and plot results
     all_yscores = {
@@ -400,16 +446,18 @@ if __name__ == "__main__":
     fig20 = plt.figure()
     with plt.rc_context({"figure.figsize": (6, 5), "figure.dpi": 300, "font.size": 10}):
         for key in all_yscores_.keys():
-            auc = skm.roc_auc_score(Ytest, all_yscores_[key])
+            ns_auc = skm.roc_auc_score(Ytest, all_yscores_[key])
             # calculate roc curves
             fpr, tpr, _ = skm.roc_curve(Ytest, all_yscores_[key])
             # plot the roc curve for the model
-            plt.plot(fpr, tpr, marker=".", label=key + ": " + str(round(auc, 2)))
+            plt.plot(fpr, tpr, marker=".", label=key + ": " + str(round(ns_auc, 2)))
             # axis labels
             plt.xlabel("False Positive Rate")
             plt.ylabel("True Positive Rate")
             # show the legend
             plt.legend()
+            # show the plot
+    #         plt.show()
 
     fig21 = plt.figure()
     with plt.rc_context({"figure.figsize": (6, 5), "figure.dpi": 300, "font.size": 10}):
@@ -430,6 +478,8 @@ if __name__ == "__main__":
             plt.ylabel("Precision")
             # show the legend
             plt.legend()
+            # show the plot
+    #         plt.show()
 
     pp = PdfPages(out_fig + "_all.pdf")
     pp.savefig(fig14, bbox_inches="tight")
@@ -449,7 +499,7 @@ if __name__ == "__main__":
 
     with open(snakemake.input["training"], "rb") as b:
         training_set = pickle.load(b)
-    shap_values_all_exp, shap_values_all_cell = shap_loop(
+    shap_values_all_exp, shap_values_all_cell, shap_values_all_gender = shap_loop(
         list(model_j), training_set, dim_exp, dim_cells, x_exp, x_cell
     )
 
@@ -499,9 +549,27 @@ if __name__ == "__main__":
             max_display=15,
         )
 
+    f5 = plt.figure()
+    #     with plt.rc_context({'figure.figsize': (4, 3), 'figure.dpi':300}):
+    #         shap.summary_plot(shap_values_all_gender/nb, plot_type= 'bar',features=np.concatenate((gender_dummies,age_), axis=1)
+    #                           , feature_names =['Male','Female','Age'],color_bar_label='Feature value',show=False, max_display=15)
+    f6 = plt.figure()
+    with plt.rc_context({"figure.figsize": (4, 3), "figure.dpi": 300}):
+        shap.summary_plot(
+            shap_values_all_gender / nb,
+            plot_type="bar",
+            features=np.concatenate((gender_dummies, age_), axis=1),
+            feature_names=["Male", "Female", "Age"],
+            color_bar_label="Feature value",
+            show=False,
+            max_display=15,
+        )
+
     pp = PdfPages(out_shap)
     pp.savefig(f1, bbox_inches="tight")
     pp.savefig(f2, bbox_inches="tight")
     pp.savefig(f3, bbox_inches="tight")
     pp.savefig(f4, bbox_inches="tight")
+    pp.savefig(f5, bbox_inches="tight")
+    pp.savefig(f6, bbox_inches="tight")
     pp.close()
