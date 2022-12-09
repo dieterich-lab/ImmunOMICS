@@ -1,0 +1,46 @@
+#!/usr/bin/env snakemake
+"""
+Snakemake pipeline for COVID-19 severity classification.
+"""
+
+__version__ = '0.1.0.02'
+
+out = config['path_out']+"/"
+inp = config['path_inp']+"/"
+test_set= config['test_data']
+train_set=  config['training_data']
+
+############################################## Quality control ##################################################################
+rule QC:
+    input: inp+"{var1}"
+    wildcard_constraints: var1='(?!merged).+'
+    output:
+        cohort_qc= out+"{var1}/QC.rds"
+    script:
+       "scripts/qc.R"    
+       
+############################################## merge seurat training datasets ###################################################
+rule merge_training:
+    input:expand(out+"{var1}/QC.rds", var1 =train_set.values() )
+    output:
+        cohort_merged= out+"merged_training/QC.rds"
+    script:
+       "scripts/merge_training.R"
+       
+######################################### cell annotation based on seurat multimodal mapping ####################################
+rule annotate_cells:
+    input:
+        cohort_train = out+"{var}/QC.rds",
+    output:
+        annotation=out+"{var}/annotation.h5Seurat",
+        celltypes= out+"{var}/celltypes.csv"
+    params:
+        ref=config['path_ref']
+    script:
+       "scripts/annotate_cells.R"
+############################################ average expression across cells of the same sample #################################
+
+rule all:
+    input: 
+        inp1=expand(out+"{var1}/annotation.h5Seurat", var1 =test_set.values() ),
+        inp2=out+"merged_training/annotation.h5Seurat"

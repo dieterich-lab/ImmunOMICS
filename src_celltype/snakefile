@@ -1,0 +1,104 @@
+#!/usr/bin/env snakemake
+"""
+Snakemake pipeline for COVID-19 severity classification.
+"""
+
+__version__ = '0.1.0.02'
+
+import pandas as pd
+import numpy as np
+import sys
+out = config['path_out']+"/"
+inp = config['path_inp']+"/"
+test_set= config['test_data']
+train_set=  config['training_data']
+#config_file = config['config_file']
+args = sys.argv
+cells=pd.read_csv(out+"merged_training/celltypes.csv", header=0).loc[:,'x'].str.replace("/", "").values
+#cells=['Classical monocytes']
+print(cells)
+############################################ average expression across cells of the same sample #################################
+    
+rule aggregate:
+    input:
+        cohort_training = out+"{var}/annotation.h5Seurat"
+    output:
+        cohort_h5Seurat=out+"{var}/pseudo_bulk.h5Seurat", 
+    script:
+       "scripts/pseudo_bulk.R"
+
+########################################## DE analysis to rank gene per fold change #############################################
+rule get_foldChange:
+    input:
+        cohort1 = out+"merged_training/pseudo_bulk.h5Seurat"
+    output:
+        sel=out+"merged_training/{celltype}/selected_genes.csv"
+    params: 
+        out_f= out+"merged_training",
+        ct= "{celltype}"
+    script:
+       "scripts/get_foldChange.R"
+       
+######################################### extract top genes######################################################################
+rule preprocess_data:
+    input: 
+        pseudo_bulk=out+"{var}/pseudo_bulk.h5Seurat",
+        fc=out+"merged_training/{celltype}/selected_genes.csv"
+    output:out+"{var}/{celltype}/selected_ge.csv"
+    params: "{celltype}"
+    script:
+       "scripts/preprocess_data.R"        
+
+     
+######################################## Train the MLP model ####################################################################
+rule train_model:
+    input:
+        GE=out+"merged_training/{celltype}/selected_ge.csv",
+    output:
+       val_set=out+"merged_training/{celltype}/val_set.pkl",
+       train_set=out+"merged_training/{celltype}/train_set.pkl",
+       model_e=out+"merged_training/{celltype}/MLP_GE.pkl",
+       svm_e=out+"merged_training/{celltype}/svm_GE.pkl",
+       LogReg_e=out+"merged_training/{celltype}/LogReg_GE.pkl",
+       RF_e=out+"merged_training/{celltype}/RF_GE.pkl",
+       
+    params: out+"merged_training/{celltype}/"
+    script: "scripts/training.py"
+    
+###################################### Performance on the validation set ########################################################
+rule predict_val:
+    input:
+       ge = out+"merged_training/val_set.pkl",
+       model_j=out+"merged_training/MLP_CC_GE.pkl",
+       model_e=out+"merged_training/MLP_GE.pkl",
+       model_c=out+"merged_training/MLP_CC.pkl",  
+       training=out+"merged_training/train_set.pkl",
+       selected=out+"merged_training/selected_ge.csv",
+    output:
+       pred_e=out+"merged_training/{celltype_}/pred_GE.csv",
+       fig=out+"merged_training/{celltype_}/fig_metrics.pdf",           
+       pred_e_=out+"merged_training/{celltype_}/pred_GE.txt",
+       #shap=out+"merged_training/{celltype_}/fig_shap.pdf"       
+       
+    script: "scripts/predict_val.py"    
+    
+###################################### Performance on the external dataset ######################################################
+
+rule predict:
+    input:
+       GE = expand(out+"{var1}/{{celltype_}}/selected_ge.csv", var1 =test_set.values() ),
+       model_e=out+"merged_training/{celltype_}/MLP_GE.pkl",
+       training=out+"merged_training/{celltype_}/train_set.pkl",
+       svm_e=out+"merged_training/{celltype_}/svm_GE.pkl",
+       LogReg_e=out+"merged_training/{celltype_}/LogReg_GE.pkl",
+       RF_e=out+"merged_training/{celltype_}/RF_GE.pkl",
+       
+    output:
+       fig=out+"pred/{celltype_}/MLP.pdf",           
+       
+       
+    script: "scripts/predict.py"
+    
+###################################### rule all #################################################################################
+rule all:
+    input: expand(out+"pred/{celltype_}/MLP.pdf", celltype_ = cells)  
