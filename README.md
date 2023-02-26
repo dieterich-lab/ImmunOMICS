@@ -137,6 +137,9 @@ mamba env create --file ${SNK_REPO}/environment.yml
 
 # activate the new Conda environment
 conda activate severityPred_env
+
+# install seurat-disk package
+R -e 'remotes::install_github("mojaveazure/seurat-disk")'
 ```
 All commands needed to reproduce results with conda solution are presented in `job.sh`. Make sure to set paths in the config file before you run the commands.
 
