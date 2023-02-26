@@ -8,24 +8,24 @@
 #SBATCH --output=out.txt
 #SBATCH -p general
 
-source activate immun2sev
+#source activate immun2sev
 srun snakemake --cores --unlock
 
-# get prediction output with all genes in the interesction of DESeq2 and edgeR
-srun snakemake --cores all predict --snakefile src/snakefile   --configfile config-All.yml --rerun-incomplete
-srun snakemake --cores all predict_val --snakefile src/snakefile   --configfile config-All.yml --rerun-incomplete
-# get prediction output with the interesction of TOP15 genes from DESeq2 and edgeR
-srun snakemake --cores all predict --snakefile src/snakefile   --configfile config-Top15.yml --rerun-incomplete
-srun snakemake --cores all predict_val --snakefile src/snakefile   --configfile config-Top15.yml --rerun-incomplete
-# get prediction output with the interesction of TOP10 genes from DESeq2 and edgeR
+# # get prediction output with all genes in the interesction of DESeq2 and edgeR
+# srun snakemake --cores all predict --snakefile src/snakefile   --configfile config-All.yml --rerun-incomplete
+# srun snakemake --cores all predict_val --snakefile src/snakefile   --configfile config-All.yml --rerun-incomplete
+# # get prediction output with the interesction of TOP15 genes from DESeq2 and edgeR
+# srun snakemake --cores all predict --snakefile src/snakefile   --configfile config-Top15.yml --rerun-incomplete
+# srun snakemake --cores all predict_val --snakefile src/snakefile   --configfile config-Top15.yml --rerun-incomplete
+# # get prediction output with the interesction of TOP10 genes from DESeq2 and edgeR
 srun snakemake --cores all predict --snakefile src/snakefile   --configfile config-Top10.yml --rerun-incomplete
 srun snakemake --cores all predict_val --snakefile src/snakefile   --configfile config-Top10.yml --rerun-incomplete
 # get prediction output with the interesction of TOP5 genes from DESeq2 and edgeR
-srun snakemake --cores all predict --snakefile src/snakefile   --configfile config-Top5.yml --rerun-incomplete
-srun snakemake --cores all predict_val --snakefile src/snakefile   --configfile config-Top5.yml --rerun-incomplete
-# get prediction output with the interesction of TOP5 genes from DESeq2 and edgeR and GenderAge integration
-srun snakemake --cores all predict --snakefile src/snakefile-GA   --configfile config-GA.yml --rerun-incomplete
-srun snakemake --cores all predict_val --snakefile src/snakefile-GA   --configfile config-GA.yml --rerun-incomplete
+# srun snakemake --cores all predict --snakefile src/snakefile   --configfile config-Top5.yml --rerun-incomplete
+# srun snakemake --cores all predict_val --snakefile src/snakefile   --configfile config-Top5.yml --rerun-incomplete
+# # get prediction output with the interesction of TOP5 genes from DESeq2 and edgeR and GenderAge integration
+# srun snakemake --cores all predict --snakefile src/snakefile-GA   --configfile config-GA.yml --rerun-incomplete
+# srun snakemake --cores all predict_val --snakefile src/snakefile-GA   --configfile config-GA.yml --rerun-incomplete
 # get celltype-specific prediction output
 srun snakemake --cores all all --snakefile src_celltype/sub_snakefile   --configfile config_celltype.yml --rerun-incomplete 
 srun snakemake --cores all all --snakefile src_celltype/snakefile   --configfile config_celltype.yml --rerun-incomplete 

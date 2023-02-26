@@ -31,7 +31,7 @@ RUN conda update conda --yes && \
     conda clean --all --yes && \
     conda clean -tipy && \
     rm /tmp/environment.yml
-
+RUN R -e 'remotes::install_github("mojaveazure/seurat-disk")'
 WORKDIR /ds
 COPY src ./src
 RUN chmod +x ./src
