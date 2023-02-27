@@ -390,21 +390,21 @@ dev.off()
 
 
 ## ---------------------------------------------------------------------------------------------------------------------------
-bonn_orig <- readRDS("~/new_NUM_CODEX_PLUS/Covid19_data/cohort2.annote.rds")
-berlin_orig <- readRDS("~/new_NUM_CODEX_PLUS/Covid19_data/cohort1.annote.rds")
-Stan_orig <- readRDS("~/new_NUM_CODEX_PLUS/Amina/data_/blish_awilk_covid_seurat.rds")
-identities_org= c("CD14+ Monocytes" ,"CD16+ Monocytes" ,"pDCs" , "mDCs" ,  "B"  ,  "Plasmablasts"   , "CD8+ T"   , "CD4+ T" , "Prol. T" ,"NK" ,  "Neutrophils","Immature Neutrophils",     "mix/undefined"  ,  "Megakaryocytes"    )
-Idents(bonn_orig)=factor(bonn_orig$celltypeL0, levels = identities_org)
-Idents(berlin_orig)=factor(berlin_orig$celltypeL0, levels = identities_org)
+# bonn_orig <- readRDS("~/new_NUM_CODEX_PLUS/Covid19_data/cohort2.annote.rds")
+# berlin_orig <- readRDS("~/new_NUM_CODEX_PLUS/Covid19_data/cohort1.annote.rds")
+# Stan_orig <- readRDS("~/new_NUM_CODEX_PLUS/Amina/data_/blish_awilk_covid_seurat.rds")
+# identities_org= c("CD14+ Monocytes" ,"CD16+ Monocytes" ,"pDCs" , "mDCs" ,  "B"  ,  "Plasmablasts"   , "CD8+ T"   , "CD4+ T" , "Prol. T" ,"NK" ,  "Neutrophils","Immature Neutrophils",     "mix/undefined"  ,  "Megakaryocytes"    )
+# Idents(bonn_orig)=factor(bonn_orig$celltypeL0, levels = identities_org)
+# Idents(berlin_orig)=factor(berlin_orig$celltypeL0, levels = identities_org)
 
-#DotPlot(bonn_orig , features = feat, cols = 'RdBu')+RotatedAxis()+ggtitle('Bonn Original Celltypes')+ labs(y="Split by Celltype", x = "Marker Genes")
+# #DotPlot(bonn_orig , features = feat, cols = 'RdBu')+RotatedAxis()+ggtitle('Bonn Original Celltypes')+ labs(y="Split by Celltype", x = "Marker Genes")
 
-#DotPlot(berlin_orig, features = feat, cols = 'RdBu')+RotatedAxis()+ggtitle('Berlin Original Celltypes')+ labs(y="Split by Celltype", x = "Marker Genes")
-identities_org= c("CD14 Mono","CD16 Mono" ,"pDC" ,"cDC1","cDC2", "B naive","B memory","B intermediate","Plasmablast" ,"CD8 Naive" ,"CD8 TEM","CD8 TCM","CD4 Naive","CD4 TCM","CD4 TEM","CD4 CTL" ,"Treg","MAIT","gdT","dnT","NK","NK_CD56","Neutrophil","Developing neutrophil","HSPC","Proliferating","Eryth","ASDC","Platelet" )
-Stan_orig$celltypeL0= Idents(Stan_orig)
-Stan_orig = subset(Stan_orig, subset = celltypeL0 %in% c("CD14 Mono","CD16 Mono" ,"pDC" ,"cDC1","cDC2", "B naive","B memory","B intermediate","Plasmablast" ,"CD8 Naive" ,"CD8 TEM","CD8 TCM","CD4 Naive","CD4 TCM","CD4 TEM","CD4 CTL" ,"Treg","MAIT","gdT","dnT","NK","NK_CD56","Neutrophil","Developing neutrophil","HSPC","Platelet"))
+# #DotPlot(berlin_orig, features = feat, cols = 'RdBu')+RotatedAxis()+ggtitle('Berlin Original Celltypes')+ labs(y="Split by Celltype", x = "Marker Genes")
+# identities_org= c("CD14 Mono","CD16 Mono" ,"pDC" ,"cDC1","cDC2", "B naive","B memory","B intermediate","Plasmablast" ,"CD8 Naive" ,"CD8 TEM","CD8 TCM","CD4 Naive","CD4 TCM","CD4 TEM","CD4 CTL" ,"Treg","MAIT","gdT","dnT","NK","NK_CD56","Neutrophil","Developing neutrophil","HSPC","Proliferating","Eryth","ASDC","Platelet" )
+# Stan_orig$celltypeL0= Idents(Stan_orig)
+# Stan_orig = subset(Stan_orig, subset = celltypeL0 %in% c("CD14 Mono","CD16 Mono" ,"pDC" ,"cDC1","cDC2", "B naive","B memory","B intermediate","Plasmablast" ,"CD8 Naive" ,"CD8 TEM","CD8 TCM","CD4 Naive","CD4 TCM","CD4 TEM","CD4 CTL" ,"Treg","MAIT","gdT","dnT","NK","NK_CD56","Neutrophil","Developing neutrophil","HSPC","Platelet"))
 
-Idents(Stan_orig)=factor(Stan_orig$celltypeL0, levels = identities_org)
+# Idents(Stan_orig)=factor(Stan_orig$celltypeL0, levels = identities_org)
 
 #DotPlot(Stan_orig, features = feat, cols = 'RdBu')+RotatedAxis()+ggtitle('Stanford Original Celltypes')+ labs(y="Split by Celltype", x = "Marker Genes")
 
@@ -419,33 +419,33 @@ feat=c('CD14','LYZ','VCAN','FCGR3A','LST1','MS4A7','APOBEC3A','IRF4','ITM2C','HL
        'MZB1' ,'POU2AF1','SLAMF7','PRDM1','TNFRSF17','TRAC', 'CD3G','CD3E','CD3D', 'CCR7','CCL5','CD8A','CD8B',
        'IL7R', 'LTB', 'LDHB', 'TPT1',  'TMSB10', 'KLRB1', 'GZMK','TRGC2', 'KLRD1', 'GZMH','GZMA','CST7','FGFBP2','NKG7','IL2RB','GNLY','FCGR3B','MME', 'PPBP','PF4','NRGN')
 #feat=c(	'CD14','LYZ','VCAN','KIT', 'TRDC', 'TTLL10', 'LINC01229', 'SOX4', 'KLRB1', 'TNFRSF18', 'TNFRSF4', 'IL1R1', 'HPGDS','SPINK2', 'PRSS57', 'CYTL1', 'EGFL7', 'GATA2', 'CD34', 'SMIM24', 'AVP', 'MYB', 'LAPTM4B','HBD', 'HBM', 'AHSP', 'ALAS2', 'CA1', 'SLC4A1', 'IFIT1B', 'TRIM58', 'SELENBP1', 'TMCC2','PPBP', 'PF4', 'NRGN', 'GNG11', 'CAVIN2', 'TUBB1', 'CLU', 'HIST1H2AC', 'RGS18', 'GP9')
-p1=DotPlot(bonn , features = feat, cols = 'RdBu')+RotatedAxis()+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())+NoLegend()
+# p1=DotPlot(bonn , features = feat, cols = 'RdBu')+RotatedAxis()+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())+NoLegend()
 
-p2=DotPlot(berlin, features = feat, cols = 'RdBu')+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())+NoLegend()
+# p2=DotPlot(berlin, features = feat, cols = 'RdBu')+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())+NoLegend()
 
-p4= DotPlot(kor, features = feat, cols = 'RdBu')+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())
+# p4= DotPlot(kor, features = feat, cols = 'RdBu')+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())
 
-p3= DotPlot(stan, features = feat, cols = 'RdBu')+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())+NoLegend()
+# p3= DotPlot(stan, features = feat, cols = 'RdBu')+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())+NoLegend()
 
-p5=DotPlot(bonn_orig , features = feat, cols = 'RdBu')+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())+NoLegend()
+# p5=DotPlot(bonn_orig , features = feat, cols = 'RdBu')+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())+NoLegend()
 
-p6=DotPlot(berlin_orig, features = feat, cols = 'RdBu')+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())+NoLegend()
+# p6=DotPlot(berlin_orig, features = feat, cols = 'RdBu')+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())+NoLegend()
 
-p7= DotPlot(Stan_orig, features = feat, cols = 'RdBu')+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())+NoLegend()
-leg <- get_legend(p4)
-p4 <- p4 + theme(legend.position = "none")
-figure <- ggarrange(p1,p5,p2,p6,p3,p7,p4,leg,
-                    font.label = list(size = 16, color = "black", face = "bold", family = NULL),
-                    labels = c("A.1","A.2", "B.1", "B.2","C.1","C.2",'D'),vjust= 1.2,
-                    ncol = 2, nrow = 4)
+# p7= DotPlot(Stan_orig, features = feat, cols = 'RdBu')+theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"),axis.text.y=element_text(hjust=1, size=8),        axis.text.x=element_text(angle=90, hjust=1, size=8),axis.title=element_blank())+NoLegend()
+# leg <- get_legend(p4)
+# p4 <- p4 + theme(legend.position = "none")
+# figure <- ggarrange(p1,p5,p2,p6,p3,p7,p4,leg,
+#                     font.label = list(size = 16, color = "black", face = "bold", family = NULL),
+#                     labels = c("A.1","A.2", "B.1", "B.2","C.1","C.2",'D'),vjust= 1.2,
+#                     ncol = 2, nrow = 4)
 
-pdf(file = paste0(path_to_outFig,"/Kownmarkergenes2.pdf"),   # The directory you want to save the file in
-    width = 16, # The width of the plot in inches
-    height = 20) # The height of the plot in inches
+# pdf(file = paste0(path_to_outFig,"/Kownmarkergenes2.pdf"),   # The directory you want to save the file in
+#     width = 16, # The width of the plot in inches
+#     height = 20) # The height of the plot in inches
 
-figure
+# figure
 
-dev.off()
+# dev.off()
 
 
 
