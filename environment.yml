@@ -1,4 +1,4 @@
-name: immun2sev5
+name: severityPred_env
 channels:
   - anaconda
   - r
