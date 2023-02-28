@@ -15,7 +15,7 @@ from sklearn.feature_selection import SelectKBest, f_classif
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 from collections import defaultdict
-from hyperopt import SparkTrials, STATUS_OK, tpe, fmin, hp
+# from hyperopt import SparkTrials, STATUS_OK, tpe, fmin, hp
 from joblib import Parallel, delayed
 
 # Load data
