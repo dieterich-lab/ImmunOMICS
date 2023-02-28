@@ -89,12 +89,12 @@ singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
 
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
 /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict_val --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src_celltype/sub_snakefile  \
+                  "snakemake --cores all all --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src_celltype/sub_snakefile  \
                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config_celltype.yml --directory /home/alemsara"
 
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
 /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict_val --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src_celltype/snakefile  \
+                  "snakemake --cores all all --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src_celltype/snakefile  \
                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config_celltype.yml --directory /home/alemsara"
 
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
