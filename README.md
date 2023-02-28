@@ -23,10 +23,10 @@ Quick Setup
 
 ```bash
 # clone the repo
-git clone https://github.com/AminaLEM/Prediction_scOmics
+git clone https://github.com/AminaLEM/ImmunOMICS
 
 # set code base path
-SNK_REPO="`pwd`/Prediction_scOmics"
+SNK_REPO="`pwd`/ImmunOMICS"
 
 ```
 
