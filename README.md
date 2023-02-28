@@ -11,7 +11,6 @@ The workflow shown below allows predicting COVID-19 severity from scRNA-seq data
 
 - The training sets: list of datasets that will be used for the training. 
 - The testing sets: list of datasets to be tested by the trained model
-- The reference dataset used for Seurat mapping as an example you can use [seurat example](https://www.sciencedirect.com/science/article/pii/S0092867421005833?via%3Dihub)
 - The output directory
 
 <p align="center">
