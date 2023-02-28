@@ -158,10 +158,10 @@ docker build -t immun2sev .
 
 ```bash
 # download the Docker image 
-docker pull aminale/test:firstpush
+docker pull aminale/immun2sev:latest
 
 # run the Snakemake pipeline through the container
-docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/test:firstpush \
+docker run -t -v ${SNK_REPO}:/SNK_REPO -v $(pwd):/CUR_DIR -e USERID=$UID aminale/immun2sev:latest \
         "snakemake --cores all all --snakefile /SNK_REPO/src/snakefile --directory /CUR_DIR \
         --configfile /SNK_REPO/src/config.yml --printshellcmds"
 
