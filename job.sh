@@ -37,35 +37,35 @@ srun snakemake --cores --unlock
 
 
 
-singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
-/prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
-                  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-All.yml --directory /home/alemsara"
+# singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
+# /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
+#                   "snakemake --cores all predict --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
+#                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-All.yml --directory /home/alemsara"
 
-singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
-/prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict_val --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
-                  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-All.yml --directory /home/alemsara"
+# singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
+# /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
+#                   "snakemake --cores all predict_val --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
+#                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-All.yml --directory /home/alemsara"
                   
-singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
-/prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
-                  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-Top15.yml --directory /home/alemsara"
+# singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
+# /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
+#                   "snakemake --cores all predict --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
+#                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-Top15.yml --directory /home/alemsara"
 
-singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
-/prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict_val --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
-                  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-Top15.yml --directory /home/alemsara"
+# singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
+# /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
+#                   "snakemake --cores all predict_val --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
+#                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-Top15.yml --directory /home/alemsara"
 
-singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
-/prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
-                  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-Top10.yml --directory /home/alemsara"
+# singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
+# /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
+#                   "snakemake --cores all predict --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
+#                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-Top10.yml --directory /home/alemsara"
 
-singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
-/prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict_val --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
-                  --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-Top10.yml --directory /home/alemsara"
+# singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
+# /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
+#                   "snakemake --cores all predict_val --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
+#                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-Top10.yml --directory /home/alemsara"
 
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
 /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
