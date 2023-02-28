@@ -32,6 +32,8 @@ RUN conda update conda --yes && \
     conda clean -tipy && \
     rm /tmp/environment.yml
 RUN R -e 'remotes::install_github("mojaveazure/seurat-disk")'
+RUN apt-get update
+RUN apt-get install --yes libtiff5
 WORKDIR /ds
 COPY src ./src
 RUN chmod +x ./src
