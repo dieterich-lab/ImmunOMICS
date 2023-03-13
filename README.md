@@ -179,7 +179,7 @@ docker run -it --rm --mount "type=bind,src=Host_directory,dst=Path_in_container"
 Reproducibility: Singularity
 ----------------------------
 
-A final option is to load the above Docker image using Singularity, designed for high-performance computing systems. To do so: 
+A final option is to load the above Docker image using Singularity 3.8.7, designed for high-performance computing systems. To do so: 
 
 1- Using singularity as an option for snakemake
 
