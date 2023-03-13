@@ -9,7 +9,7 @@
 #SBATCH -p general
 
 #source activate immun2sev
-srun snakemake --cores --unlock
+#srun snakemake --cores --unlock
 
 # # get prediction output with all genes in the interesction of DESeq2 and edgeR
 # srun snakemake --cores all predict --snakefile src/snakefile   --configfile config-All.yml --rerun-incomplete
