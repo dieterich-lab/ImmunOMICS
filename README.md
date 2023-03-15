@@ -57,7 +57,6 @@ Here is the config file for the testing example. Data can be found in [zenodo](h
 # INPUT & OUTPUT PATHS
 path_out: "../../output"          # path to the output directory, if it doesn't exist it will be created 
 path_inp: "../data"           # path to the directory containing input datasets in h5Seurat format
-path_ref: "../data/pbmc_multimodal.h5seurat"         # reference dataset for Seurat mapping  
 
 
 # INPUTS PARAMS
