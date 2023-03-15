@@ -103,6 +103,7 @@ Reproducibility: Singularity
 ----------------------------
 
 We recommend using all-in-one image and Singularity 3.8.7
+
 All commands needed to reproduce results are presented in `job.sh`. Make sure to set paths in the config file before you run the commands.
 
 ```bash 
@@ -146,4 +147,4 @@ Notes & Tips
 ------------
 
 - Please make sure to mount/bind all host repositories you use (for inputs and outputs) into your container and set a writable directory for the --directory option in snakemake.   
-- Due to a relatively high number of outputs from each step of the workflow the pipeline might generate a false errors of not finding a file. In this case, you just need to run the workflow again and it will continue from where it stopped automatically. Please just post issues if the errors persist.
+- Due to a relatively high number of outputs from each step of the workflow might generate a false errors of not finding a file. In this case, you just need to run the workflow again and it will continue from where it stopped automatically. Please just post issues if the errors persist.
