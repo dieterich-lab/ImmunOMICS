@@ -25,15 +25,6 @@ SNK_REPO="`pwd`/ImmunOMICS"
 
 ```
 
-If you are running jobs on the cluster, it is best first to start a [tmux](https://github.com/tmux/tmux) session so that the session may be re-attached at a later time point. 
-
-```bash
-# start session
-tmux new -s snkmk 
-
-# log back into a session
-tmux -a snkmk
-```
 Config file
 -----------
 Please provide input datasets in the Seurat format h5Seurat. 
@@ -59,7 +50,7 @@ The input datasets should contain the following metadata columns:
 * "batch": the batch name of your data
 * "who_score": if availbale else =condition (it serves as factor for the traning/validation split)
 
-Here is the config file for the testing example. Data can be found in [zenodo](https://doi.org/10.5281/zenodo.6811191).
+Here is the config file for the testing example. Data can be found in [zenodo](https://doi.org/10.5281/zenodo.7729004).
 
 
 ```
@@ -155,3 +146,4 @@ Notes & Tips
 ------------
 
 - Please make sure to mount/bind all host repositories you use (for inputs and outputs) into your container and set a writable directory for the --directory option in snakemake.   
+- Due to a relatively high number of outputs from each step of the workflow the pipeline might generate a false errors of not finding a file. In this case, you just need to run the workflow again and it will continue from where it stopped automatically. Please just post issues if the errors persist.
