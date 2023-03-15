@@ -66,7 +66,9 @@ training_data:               # Training datasets
     
 test_data:               # Testing datasets
     set3:  'korean.h5Seurat'        
-    set3:  'stanford_pbmc.h5Seurat'        
+    set3:  'stanford_pbmc.h5Seurat'   
+    
+nbTopGenes: 40.  # number of top genes selected from pseudo bulk analysis to set GE modality. For a comparative analysis, we tested different numbers: 40, 15, 10, 5 each one in a separate config files.
 
 ```
 Note that you can set as many training and testing datasets as you want. Datasets under `training_data` will be merged, and 80% will be used for the training, and 20 % for the validation split randomly 30 times. 
