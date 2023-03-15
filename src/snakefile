@@ -65,8 +65,6 @@ rule annotate_cells:
         cohort_train = out+"{var}/QC.rds",
     output:
         annotation=out+"{var}/annotation.csv",
-    params:
-        ref=config['path_ref']
     script:
        "scripts/annotate_cells.R"
      
