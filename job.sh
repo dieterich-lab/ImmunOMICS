@@ -8,7 +8,8 @@
 #SBATCH --output=out.txt
 #SBATCH -p general
 
-#source activate immun2sev
+######Conda option
+#source activate severityPred_env
 #srun snakemake --cores --unlock
 
 # # get prediction output with all genes in the interesction of DESeq2 and edgeR
@@ -36,7 +37,7 @@
 #run rule predict for prediction on the test set and rule predict_val for the prediction on the validation set
 
 
-
+##### With singularity
 # singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
 # /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
 #                   "snakemake --cores all predict --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
