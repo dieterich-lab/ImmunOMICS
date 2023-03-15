@@ -148,4 +148,4 @@ Notes & Tips
 ------------
 
 - Please make sure to mount/bind all host repositories you use (for inputs and outputs) into your container and set a writable directory for the --directory option in snakemake.   
-- Due to a relatively high number of outputs from each step of the workflow might generate a false errors of not finding a file. In this case, you just need to run the workflow again and it will continue from where it stopped automatically. Please just post issues if the errors persist.
+- Due to a relatively high number of outputs from each step of the workflow, it might generate a false errors of not finding a file. In this case, you just need to run the workflow again and it will continue from where it stopped automatically. Please just post issues if the errors persist.
