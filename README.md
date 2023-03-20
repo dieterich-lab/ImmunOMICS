@@ -109,7 +109,7 @@ All commands needed to reproduce results are presented in `job.sh`. Make sure to
 
 ```bash 
 singularity run -B /Host_directory aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all all --snakefile src/snakefile  \
+                  "snakemake --cores all predict --snakefile src/snakefile  \
                   --configfile /path_to_config/config.yml --directory /writable_directory"
 ```
 Singularity image aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif can be found in [zenodo](https://doi.org/10.5281/zenodo.7729004). 
@@ -149,3 +149,4 @@ Notes & Tips
 
 - Please make sure to mount/bind all host repositories you use (for inputs and outputs) into your container and set a writable directory for the --directory option in snakemake.   
 - Due to a relatively high number of outputs from each step of the workflow, it might generate a false errors of not finding a file. In this case, you just need to run the workflow again and it will continue from where it stopped automatically. Please just post issues if the errors persist.
+- Please accept warnings coming with seurat-disk installation
