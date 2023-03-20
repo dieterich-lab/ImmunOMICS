@@ -146,7 +146,7 @@ R -e 'remotes::install_github("mojaveazure/seurat-disk")'
 
 Notes & Tips
 ------------
-
-- Please make sure to mount/bind all host repositories you use (for inputs and outputs) into your container and set a writable directory for the --directory option in snakemake.   
-- Due to a relatively high number of outputs from each step of the workflow, it might generate a false errors of not finding a file. In this case, you just need to run the workflow again and it will continue from where it stopped automatically. Please just post issues if the errors persist.
+- We recommand using HPC and run job.sh to reproduce results.
+- Please make sure to mount/bind all host repositories you use (for inputs and outputs) into your container and set a writable directory for the --directory option in snakemake when using singularity option.   
+- Due to a relatively high number of outputs from each step of the workflow, it might generate a false errors of not finding a file. In this case, you just need to run the workflow again and it will continue from where it stopped automatically. Please only post issues if the errors persist.
 - Please accept warnings coming with seurat-disk installation
