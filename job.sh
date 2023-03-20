@@ -25,9 +25,6 @@
 # srun snakemake --cores all all --snakefile src/snakefile-downstream   --configfile config-Top5.yml --rerun-incomplete
 
 
-#run rule predict for prediction on the test set and rule predict_val for the prediction on the validation set
-
-
 ##### With singularity
 
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
