@@ -34,8 +34,6 @@ rule annotate_cells:
     output:
         annotation=out+"{var}/annotation.h5Seurat",
         celltypes= out+"{var}/celltypes.csv"
-    params:
-        ref=config['path_ref']
     script:
        "scripts/annotate_cells.R"
 ############################################ average expression across cells of the same sample #################################
