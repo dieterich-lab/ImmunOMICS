@@ -96,7 +96,7 @@ singularity run -B /Host_directory aminale_immun2sev_latest-2023-02-28-3349561f6
                   --configfile /path_to_config/config.yml --directory /writable_directory"
 ```
 
-All commands needed to reproduce our results (main and comparative analysis that needs in total 10 successive commands) are in `job.sh`; parameters are in the listed config files.
+All commands needed to reproduce our results (main and comparative analysis that need in total 10 successive commands) are in `job.sh`; parameters are in the listed config files.
 
 You can add your data under `test_data` in the config file to predict severity from our trained model.
 
