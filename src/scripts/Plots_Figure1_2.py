@@ -193,6 +193,34 @@ pp.savefig(fig12, bbox_inches='tight')
 pp.savefig(fig13, bbox_inches='tight')
 pp.close()
 
+def eval_box_sbn(metrics,tit):
+    f = plt.figure()
+    data=pd.DataFrame([], columns=["modality",'value'])
+    for d in metrics:
+        data_=pd.DataFrame([np.full((len(metrics[d])), d),metrics[d]], index=["modality",'value'])
+        data=pd.concat([data,data_.transpose()],ignore_index=True)
+    data.value= data.value.astype('float')
+    mod=data.modality.unique()
+    if len(mod)==5:
+        pairs=[("GE", "CC"),("GE", "CC&GE"),("CC", "CC&GE"),("CC&GE_GA", "CC&GE"),("CC&GE_10", "CC&GE")]
+    else:
+        pairs=[("ALL", "Top15"),("Top15", "Top10"),("Top5", "Top10")]
+    sns.set(rc={"figure.figsize":(4, 5)})
+    sns.set_style('whitegrid')
+    with plt.rc_context({'figure.dpi':96, "font.size" : 16}):
+
+        g = sns.boxplot(x="modality", y='value', data=data, width=0.6)
+
+        add_stat_annotation(g, x="modality", y='value', data=data,
+                        box_pairs=pairs,
+                        test='Mann-Whitney', text_format='star', loc='inside', verbose=2)
+        plt.ylabel(tit)
+        if len(mod)==3:
+            plt.xlabel('modality')
+        else:
+            plt.xlabel('model')
+
+    return f
 
 
 top5 = path+'/pred/MLP'
