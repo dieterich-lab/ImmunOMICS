@@ -66,7 +66,7 @@ training_data:               # Training datasets
     
 test_data:               # Testing datasets
     set3:  'korean.h5Seurat'        
-    set3:  'stanford_pbmc.h5Seurat'   
+    set4:  'stanford_pbmc.h5Seurat'   
     
 nbTopGenes: 40  # number of top genes selected from pseudo bulk analysis to set GE modality. For a comparative analysis, we tested different numbers: 40, 15, 10, 5 each one in a separate config files.
 
