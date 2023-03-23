@@ -281,12 +281,12 @@ if __name__ == "__main__":
         fig3 = eval_box(
             {"CC": res_c["acc"], "GE": res_e["acc"], "CC&GE": res_j["acc"]}, "ACCURACY"
         )
-        fig4 = eval_box(
-            {"CC": res_c["prc"], "GE": res_e["prc"], "CC&GE": res_j["prc"]}, "PRECISION"
-        )
-        fig5 = eval_box(
-            {"CC": res_c["rec"], "GE": res_e["rec"], "CC&GE": res_j["rec"]}, "RECALL"
-        )
+#         fig4 = eval_box(
+#             {"CC": res_c["prc"], "GE": res_e["prc"], "CC&GE": res_j["prc"]}, "PRECISION"
+#         )
+#         fig5 = eval_box(
+#             {"CC": res_c["rec"], "GE": res_e["rec"], "CC&GE": res_j["rec"]}, "RECALL"
+#         )
         fig6 = eval_box(
             {"CC": res_c["f1"], "GE": res_e["f1"], "CC&GE": res_j["f1"]}, "F1-SCORE"
         )
@@ -323,8 +323,8 @@ if __name__ == "__main__":
         pp.savefig(fig1, bbox_inches="tight")
         pp.savefig(fig2, bbox_inches="tight")
         pp.savefig(fig3, bbox_inches="tight")
-        pp.savefig(fig4, bbox_inches="tight")
-        pp.savefig(fig5, bbox_inches="tight")
+#         pp.savefig(fig4, bbox_inches="tight")
+#         pp.savefig(fig5, bbox_inches="tight")
         pp.savefig(fig6, bbox_inches="tight")
         pp.savefig(fig7, bbox_inches="tight")
         pp.savefig(fig8, bbox_inches="tight")
