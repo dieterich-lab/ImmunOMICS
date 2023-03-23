@@ -121,7 +121,7 @@ rule predict_val:
     script: "scripts/predict_val-GA.py"    
     
 ###################################### Performance on the external dataset ######################################################
-rule predict:
+rule all:
     input:
        CC = expand(out+"{var1}/annotation.csv", var1 =test_set.values() ),
        GE = expand(out+"{var1}/selected_ge.csv", var1 =test_set.values() ),
@@ -149,7 +149,3 @@ rule predict:
        out_shap=out+"pred/fig_shap.pdf",
        
     script: "scripts/predict-GA.py"
-    
-###################################### rule all #################################################################################
-rule all:
-       input: expand(out+"{var1}/fig_shap.pdf", var1 =test_set.values() )
