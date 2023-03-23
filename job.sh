@@ -13,18 +13,18 @@
 #srun snakemake --cores --unlock
 
 # # get prediction output with all genes in the interesction of DESeq2 and edgeR
-# srun snakemake --cores all predict --snakefile src/snakefile   --configfile config-Top5.yml --rerun-incomplete
+# srun snakemake --cores all all --snakefile src/snakefile   --configfile config-Top5.yml --rerun-incomplete
 # srun snakemake --cores all predict_val --snakefile src/snakefile   --configfile config-Top5.yml --rerun-incomplete
 # # get prediction output with the interesction of TOP5 genes from DESeq2 and edgeR and GenderAge integration
-# srun snakemake --cores all predict --snakefile src/snakefile-GA   --configfile config-GA.yml --rerun-incomplete
+# srun snakemake --cores all all --snakefile src/snakefile-GA   --configfile config-GA.yml --rerun-incomplete
 # srun snakemake --cores all predict_val --snakefile src/snakefile-GA   --configfile config-GA.yml --rerun-incomplete
 # #get celltype-specific prediction output
 # srun snakemake --cores all all --snakefile src_celltype/sub_snakefile   --configfile config_celltype.yml --rerun-incomplete 
 # srun snakemake --cores all all --snakefile src_celltype/snakefile   --configfile config_celltype.yml --rerun-incomplete 
 # # get Figures as presented in the paper, please respect names of output folders in config files to get the result
-# srun snakemake --cores all predict --snakefile src/snakefile   --configfile config-All.yml --rerun-incomplete
-# srun snakemake --cores all predict --snakefile src/snakefile   --configfile config-Top10.yml --rerun-incomplete
-# srun snakemake --cores all predict --snakefile src/snakefile   --configfile config-Top15.yml --rerun-incomplete
+# srun snakemake --cores all all --snakefile src/snakefile   --configfile config-All.yml --rerun-incomplete
+# srun snakemake --cores all all --snakefile src/snakefile   --configfile config-Top10.yml --rerun-incomplete
+# srun snakemake --cores all all --snakefile src/snakefile   --configfile config-Top15.yml --rerun-incomplete
 # srun snakemake --cores all all --snakefile src/snakefile-downstream   --configfile config-Top5.yml --rerun-incomplete
 
 
@@ -32,7 +32,7 @@
 
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
 /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
+                  "snakemake --cores all all --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-Top5.yml --directory /home/alemsara"
 
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
@@ -42,7 +42,7 @@ singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
 
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
 /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile-GA  \
+                  "snakemake --cores all all --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile-GA  \
                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-GA.yml --directory /home/alemsara"
 
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
@@ -65,15 +65,15 @@ singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
 
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
 /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
+                  "snakemake --cores all all --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-All.yml --directory /home/alemsara"
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
 /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
+                  "snakemake --cores all all --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-Top10.yml --directory /home/alemsara"
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
 /prj/NUM_CODEX_PLUS/Amina/CellSubmission/Prediction_scOmics/singularity/aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
+                  "snakemake --cores all all --snakefile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/src/snakefile  \
                   --configfile /prj/NUM_CODEX_PLUS/Amina/CellSubmission/new_runs/ImmunOMICS/config-Top15.yml --directory /home/alemsara"
 
 singularity run -B /prj/NUM_CODEX_PLUS/Amina/CellSubmission -B /home/alemsara \
