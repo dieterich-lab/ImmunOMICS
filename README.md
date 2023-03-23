@@ -92,7 +92,7 @@ To run the end-to-end pipeline on your data please use the following command. Ma
 
 ```bash 
 singularity run -B /Host_directory aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
-                  "snakemake --cores all predict --snakefile src/snakefile  \
+                  "snakemake --cores all all --snakefile src/snakefile  \
                   --configfile /path_to_config/config.yml --directory /writable_directory"
 ```
 
