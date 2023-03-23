@@ -7,11 +7,14 @@ Snakemake pipeline for predicting severity in COVID-19.
 Overview
 --------
 
-The workflow shown below allows predicting COVID-19 severity from scRNA-seq data. The workflow parameters should be set in the config file provided as a parameter for the snakemake command. The inputs are: 
+The workflow shown below allows predicting COVID-19 severity from scRNA-seq data. One can run an end-to-end pipeline (cell annotation, features selection, training and prediction) by setting specific parameters.
 
-- The training sets: list of datasets that will be used for the training. 
+The workflow parameters should be set in the config file provided as a parameter for the snakemake command. The inputs are: 
+
+- The training sets: list of datasets that will be used for the training
 - The testing sets: list of datasets to be tested by the trained model
 - The output directory
+- The number of Top genes differentially expressed between conditions (Mild or Severe) to be selected
 
 Quick Setup
 -----------
@@ -103,16 +106,17 @@ In Top5 model results, you should expect an output folder `figures` containing a
 Reproducibility: Singularity
 ----------------------------
 
-We recommend using all-in-one image and Singularity 3.8.7
+We recommend using the all-in-one image [aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif](https://doi.org/10.5281/zenodo.7729004).
 
-All commands needed to reproduce results are presented in `job.sh`. Make sure to set paths in the config file before you run the commands.
+To run the end-to-end pipeline on your data please use the following command. Make sure to set paths in the config file before you run the commands.
 
 ```bash 
 singularity run -B /Host_directory aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
                   "snakemake --cores all predict --snakefile src/snakefile  \
                   --configfile /path_to_config/config.yml --directory /writable_directory"
 ```
-Singularity image aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif can be found in [zenodo](https://doi.org/10.5281/zenodo.7729004). 
+
+All commands needed to reproduce our results (main and comparative analysis) are in `job.sh`; parameters are in the config files.
 
 
 Reproducibility: Conda   
@@ -147,6 +151,7 @@ R -e 'remotes::install_github("mojaveazure/seurat-disk")'
 Notes & Tips
 ------------
 - We recommand using HPC and run job.sh to reproduce results.
+- We used Singularity version 3.8.7.
 - Please make sure to mount/bind all host repositories you use (for inputs and outputs) into your container and set a writable directory for the --directory option in snakemake when using singularity option.   
 - Due to a relatively high number of outputs from each step of the workflow, it might generate a false errors of not finding a file. In this case, you just need to run the workflow again and it will continue from where it stopped automatically. Please only post issues if the errors persist.
 - Please accept warnings coming with seurat-disk installation
