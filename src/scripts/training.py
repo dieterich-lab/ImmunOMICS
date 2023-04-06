@@ -302,8 +302,8 @@ if __name__ == "__main__":
     x_exp = x_exp.drop("condition", axis=1)
     x_exp = x_exp.drop("who_score", axis=1)
     if x_exp.empty:
-        print('\033[31m' + 'INFO: no gene is selected, you may want to increase the nbTopGenes parameter ... we will introduce zeros vector to avoid errors!!'+ '\033[0m')
-    x_exp['ones']=0
+        print('\033[31m' + 'INFO: no gene is selected, you may want to increase the nbTopGenes parameter ... we will introduce ones vector to avoid errors of empty dataframe!!'+ '\033[0m')
+        x_exp['ones']=1
     le = LabelEncoder()
     Ytrain = le.fit_transform(label)
     # scale GE data to 0-1 knowing that the Gene expession is between 0 and 15
