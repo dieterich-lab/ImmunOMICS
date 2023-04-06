@@ -2,8 +2,8 @@
 
 #SBATCH -n 1
 #SBATCH -N 1
-#SBATCH --mem=240G
-#SBATCH -c 40
+#SBATCH --mem=60G
+#SBATCH -c 10
 #SBATCH --job-name="prediction"
 #SBATCH --output=out.txt
 #SBATCH -p general
