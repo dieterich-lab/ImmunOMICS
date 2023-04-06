@@ -1,9 +1,12 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
+import warnings
+warnings.filterwarnings("ignore")
 from sklearn.preprocessing import LabelEncoder, minmax_scale
 import pickle
 import numpy as np
 import pandas as pd
 import random
-import os
 import tensorflow as tf
 from keras.callbacks import ModelCheckpoint
 from sklearn.utils import resample
@@ -67,7 +70,7 @@ def training(model, trainDataOne, y, valid_set, ref):
 
     # Creating a custom callback to print the log after a certain number of epochs
     class NEPOCHLogger(tf.keras.callbacks.Callback):
-        def __init__(self, per_epoch=100):
+        def __init__(self, per_epoch=500):
             """
             display: Number of batches to wait before outputting loss
             """
@@ -298,6 +301,9 @@ if __name__ == "__main__":
     x_cell = x_cell.drop("condition", axis=1)
     x_exp = x_exp.drop("condition", axis=1)
     x_exp = x_exp.drop("who_score", axis=1)
+    if x_exp.empty:
+        print('\033[31m' + 'INFO: no gene is selected, you may want to increase the nbTopGenes parameter ... we will introduce zeros vector to avoid errors!!'+ '\033[0m')
+    x_exp['ones']=0
     le = LabelEncoder()
     Ytrain = le.fit_transform(label)
     # scale GE data to 0-1 knowing that the Gene expession is between 0 and 15

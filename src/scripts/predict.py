@@ -1,3 +1,7 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
+import warnings
+warnings.filterwarnings("ignore")
 from sklearn.preprocessing import LabelEncoder, minmax_scale
 import pickle
 import numpy as np
@@ -170,7 +174,6 @@ def shap_loop(model_j, training_set, dim_exp, dim_cells, x_exp, x_cell):
 
 
 if __name__ == "__main__":
-
     with open(model_j_f, "rb") as b:
         model_j = pickle.load(b)
     with open(model_e_f, "rb") as b:
@@ -205,6 +208,9 @@ if __name__ == "__main__":
     x_cell = x_cell.drop("condition", axis=1)
     x_exp = x_exp.drop("condition", axis=1)
     x_exp = x_exp.drop("who_score", axis=1)
+    if x_exp.empty:
+        print('\033[31m' + 'INFO: no gene is selected, you may want to increase the nbTopGenes parameter ... we will introduce zeros vector to avoid errors!!'+ '\033[0m')
+        x_exp['ones']=0
 
     genes = x_exp.columns
     cells = x_cell.columns
@@ -454,27 +460,27 @@ if __name__ == "__main__":
     )
 
     nb = len(model_j)
-    f1 = plt.figure()
-    with plt.rc_context({"figure.figsize": (4, 3), "figure.dpi": 300}):
-        shap.summary_plot(
-            shap_values_all_exp / nb,
-            plot_type="violin",
-            features=np.array(x_exp),
-            feature_names=genes,
-            color_bar_label="Feature value",
-            show=False,
-        )
-    f2 = plt.figure()
-
-    with plt.rc_context({"figure.figsize": (4, 3), "figure.dpi": 300}):
-        shap.summary_plot(
-            shap_values_all_exp / nb,
-            plot_type="bar",
-            features=np.array(x_exp),
-            feature_names=genes,
-            color_bar_label="Feature value",
-            show=False,
-        )
+    if x_exp.columns[0]!='ones':
+        f1 = plt.figure()
+        with plt.rc_context({"figure.figsize": (4, 3), "figure.dpi": 300}):
+            shap.summary_plot(
+                shap_values_all_exp / nb,
+                plot_type="violin",
+                features=np.array(x_exp),
+                feature_names=genes,
+                color_bar_label="Feature value",
+                show=False,
+            )
+        f2 = plt.figure()
+        with plt.rc_context({"figure.figsize": (4, 3), "figure.dpi": 300}):
+            shap.summary_plot(
+                shap_values_all_exp / nb,
+                plot_type="bar",
+                features=np.array(x_exp),
+                feature_names=genes,
+                color_bar_label="Feature value",
+                show=False,
+            )
     f3 = plt.figure()
 
     with plt.rc_context({"figure.figsize": (4, 3), "figure.dpi": 300}):
@@ -488,6 +494,7 @@ if __name__ == "__main__":
             max_display=15,
         )
     f4 = plt.figure()
+    
     with plt.rc_context({"figure.figsize": (4, 3), "figure.dpi": 300}):
         shap.summary_plot(
             shap_values_all_cell / nb,
@@ -500,8 +507,9 @@ if __name__ == "__main__":
         )
 
     pp = PdfPages(out_shap)
-    pp.savefig(f1, bbox_inches="tight")
-    pp.savefig(f2, bbox_inches="tight")
+    if x_exp.columns[0]!='ones':
+        pp.savefig(f1, bbox_inches="tight")
+        pp.savefig(f2, bbox_inches="tight")
     pp.savefig(f3, bbox_inches="tight")
     pp.savefig(f4, bbox_inches="tight")
     pp.close()

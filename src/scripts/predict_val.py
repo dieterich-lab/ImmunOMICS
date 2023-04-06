@@ -1,3 +1,6 @@
+import warnings
+warnings.simplefilter(action='ignore')
+
 import pickle
 import numpy as np
 import pandas as pd

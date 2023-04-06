@@ -19,7 +19,12 @@ y <- DGEList(cts, samples = ch@meta.data)
 keep <- filterByExpr(y, group = ch@meta.data$condition)
 y <- y[keep, ]
 y <- calcNormFactors(y)
+
+if (length(unique(ch@meta.data$batch))>1){
 design <- model.matrix( ~ 0 + batch + factor(condition), y$samples)
+}else{
+design <- model.matrix( ~ 0 + factor(condition), y$samples)
+}
 y <- estimateDisp(y, design)
 fit <- glmQLFit(y, design, robust = TRUE)
 resedger <- glmQLFTest(fit, coef = ncol(design))
@@ -30,11 +35,21 @@ res3 = res3[res3$FDR < 0.05, ]
 
 # perform DESeq2 --------
 # Create DESeq2 object
+
+if (length(unique(ch@meta.data$batch))>1){
 dds <- DESeqDataSetFromMatrix(
   countData = cts,
   colData = ch@meta.data,
   design = ~ batch + condition
 )
+}else{
+dds <- DESeqDataSetFromMatrix(
+  countData = cts,
+  colData = ch@meta.data,
+  design = ~ condition
+)
+}
+
 # filter
 dds <- dds[keep, ]
 # run DESeq2

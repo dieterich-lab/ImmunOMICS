@@ -1,3 +1,6 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
+
 from sklearn.preprocessing import LabelEncoder, minmax_scale
 import pickle
 import numpy as np
@@ -228,6 +231,10 @@ if __name__ == "__main__":
     x_cell = x_cell.drop("condition", axis=1)
     x_exp = x_exp.drop("condition", axis=1)
     x_exp = x_exp.drop("who_score", axis=1)
+    if x_exp.empty:
+        print('INFO: no gene is selected, you may want to increase the nbTopGenes parameter ... The downstream analysis will be based only on celltype proportions!!')
+        x_exp['ones']=1
+    
     genes = x_exp.columns
     cells = x_cell.columns
     selected_cols = cells
