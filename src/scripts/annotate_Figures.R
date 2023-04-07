@@ -227,7 +227,7 @@ saveRDS(stan,paste0(path_to_outData,'/stan_anno.rds'))
 
 findmarker <- function(ch,dataset){
   Idents(ch)=ch$celltype
-  plan("multisession", workers = 20)
+  plan("multisession", workers = 2)
   markers <- FindAllMarkers(object = ch,
                             only.pos = TRUE,
                             min.pct = 0.2,
