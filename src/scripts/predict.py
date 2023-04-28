@@ -51,7 +51,7 @@ out_shap = snakemake.output["out_shap"]
 
 
 def confidence_interval(values):
-    mean = np.mean(values)
+    mean = np.mean(values, dtype=np.float128)
     alpha = 0.95
     p = ((1.0 - alpha) / 2.0) * 100
     bottom = max(0.0, np.percentile(values, p))
