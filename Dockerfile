@@ -23,7 +23,6 @@ WORKDIR /tmp
 
 # download the conda environment OR copy from local directory
 COPY environment.yml /tmp/environment.yml
-RUN pip install --upgrade pip
 # install conda environment
 RUN conda update conda --yes && \
     conda env update -v -n root --file /tmp/environment.yml && \
@@ -36,6 +35,8 @@ RUN apt-get update
 WORKDIR /ds
 COPY src ./src
 RUN chmod +x ./src
+COPY src ./src_celltype
+RUN chmod +x ./src_celltype
 
 # clear tmp if there is anything in there...
 RUN rm -rf /tmp/*
