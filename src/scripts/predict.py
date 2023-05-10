@@ -164,7 +164,7 @@ def shap_loop(model_j, training_set, dim_exp, dim_cells, x_exp, x_cell):
 
         explainer = shap.DeepExplainer(model_joint, [x_ref_exp, x_ref_cell])
         shap_values = explainer.shap_values([np.array(x_exp), np.array(x_cell)])
-        if model_joint == model_j[0]:
+        if i == 0:
             shap_values_all_exp = shap_values[0][0]
             shap_values_all_cell = shap_values[0][1]
         else:
