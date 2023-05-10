@@ -4,7 +4,7 @@ LABEL maintainer="Amina Lemsara <lemsaraamina@gmail.com>"
 
 # Set up locales properly
 RUN apt-get update && \
-    apt-get install --yes --no-install-recommends locales && \
+    apt-get install --yes --no-install-recommends locales libtiff5 && \
     apt-get purge && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -33,7 +33,6 @@ RUN conda update conda --yes && \
     rm /tmp/environment.yml
 RUN R -e 'remotes::install_github("mojaveazure/seurat-disk")'
 RUN apt-get update
-RUN apt-get install --yes libtiff5
 WORKDIR /ds
 COPY src ./src
 RUN chmod +x ./src
