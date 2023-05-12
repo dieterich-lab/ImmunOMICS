@@ -20,7 +20,7 @@ The inputs are:
 
 We provide in the following steps how to install/use the tool, set the config file and run the end-to-end snakemake command.
 
-You can reproduce our results by using data in [zenodo](https://doi.org/10.5281/zenodo.7729004) and `job.sh` as we will describe below.
+You can reproduce our results by using data in [zenodo](https://doi.org/10.5281/zenodo.7928637) and `job.sh` as we will describe below.
 After reproducing our results you can use the trained model to predict severity on your data.
 
 Quick Setup
@@ -60,7 +60,7 @@ The input datasets should contain the following metadata columns:
 * "batch": the batch name of your data
 * "who_score": if availbale else =condition (it serves as factor for the traning/validation split)
 
-Here is the config file for the testing example. Data can be found in [zenodo](https://doi.org/10.5281/zenodo.7729004).
+Here is the config file for the testing example. Data can be found in [zenodo](https://doi.org/10.5281/zenodo.7928637).
 
 
 ```
@@ -86,7 +86,7 @@ Note that you can set as many training and testing datasets as you want. Dataset
 Reproducibility: Singularity
 ----------------------------
 
-We recommend using the all-in-one image [aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif](https://doi.org/10.5281/zenodo.7729004).
+We recommend using the all-in-one image [aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif](https://doi.org/10.5281/zenodo.7928637).
 
 To run the end-to-end pipeline on your data please use the following command. Make sure to set paths in the config file before you run the commands.
 
