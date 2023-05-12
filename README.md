@@ -86,12 +86,12 @@ Note that you can set as many training and testing datasets as you want. Dataset
 Reproducibility: Singularity
 ----------------------------
 
-We recommend using the all-in-one image [aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif](https://doi.org/10.5281/zenodo.7928637).
+We recommend using the all-in-one image [aminale_immun2sev_latest-2023-05-11-be16ed9eed81.sif](https://doi.org/10.5281/zenodo.7928637).
 
 To run the end-to-end pipeline on your data please use the following command. Make sure to set paths in the config file before you run the commands.
 
 ```bash 
-singularity run -B /Host_directory aminale_immun2sev_latest-2023-02-28-3349561f6f7d.sif \
+singularity run -B /Host_directory aminale_immun2sev_latest-2023-05-11-be16ed9eed81.sif \
                   "snakemake --cores all all --snakefile src/snakefile  \
                   --configfile /path_to_config/config.yml --directory /writable_directory"
 ```
