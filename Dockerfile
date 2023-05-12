@@ -35,7 +35,7 @@ RUN apt-get update
 WORKDIR /ds
 COPY src ./src
 RUN chmod +x ./src
-COPY src ./src_celltype
+COPY src_celltype ./src_celltype
 RUN chmod +x ./src_celltype
 
 # clear tmp if there is anything in there...
